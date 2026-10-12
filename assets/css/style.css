@@ -41,7 +41,7 @@ h6 {
   font-family: "Montserrat", sans-serif;
 }
 
-p,
+p, div,
 span,
 a,
 li, button {
@@ -705,13 +705,49 @@ img {
 /* =========================================
    ABOUT COMPANY SECTION
 ========================================= */
-.about-section {
+/* .about-section {
   position: relative;
   width: 100%;
   padding: 150px 0 0 140px;
   background: var(--background);
   overflow: hidden;
   isolation: isolate;
+} */
+
+.about-section {
+  position: relative;
+  width: 100%;
+  padding: 150px 0 0 140px;
+  background: #000000;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Background Image */
+.about-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background-image: url("../img/about-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  opacity: 0.15; /* yahan opacity adjust karein */
+  z-index: -2;
+}
+
+/* Optional dark/light overlay */
+.about-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: var(--background);
+  opacity: 0.40;
+
+  z-index: -1;
 }
 
 .green{
@@ -739,8 +775,8 @@ img {
   background: radial-gradient(
     circle,
     #b5e529cc 0%,
-    #b5e5295c 35%,
-    #b5e52942 72%
+    #b5e5295c 45%,
+    #b5e52942 80%
   );
 
   animation: aboutGlowMove1 12s ease-in-out infinite alternate;
@@ -1027,23 +1063,17 @@ img {
    DESCRIPTION
 ========================================= */
 .about-description {
-  padding-left: 22px;
-  padding-top: 4px;
-  max-width: 570px;
-}
-
-.about-meta {
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 17px;
+  padding-left: 13px;
+  padding-top: 8px;
+  max-width: 480px;
 }
 
 .about-description p {
   color: var(--text);
-  font-size: 13px;
-  line-height: 1.8;
+  font-size: 14px;
+  line-height: 1.6;
   font-weight: 300;
+  text-align: justify;
   margin: 0;
 }
 
@@ -1298,17 +1328,16 @@ img {
   }
 }
 
-
-/* =========================================================
+/* =========================
    SERVICES SECTION
-========================================================= */
+========================= */
 .services {
   position: relative;
   width: 100%;
   background: #050505;
   color: #fff;
   overflow: clip;
-  padding-bottom: 120px;
+  padding-bottom: 2px;
 }
 
 /* =========================================================
@@ -2287,6 +2316,363 @@ img {
 
 }
 
+/* =========================
+   WORK RESULTS SECTION
+========================= */
+.work-results {
+  position: relative;
+  width: 100%;
+  min-height: 700px;
+  overflow: hidden;
+  background: #080808;
+  color: #fff;
+  padding: 130px 20px 130px 60px;
+  isolation: isolate;
+}
+
+/* Purple glow */
+.work-results::before {
+  content: "";
+  position: absolute;
+  top: -180px;
+  right: -80px;
+  width: 550px;
+  height: 350px;
+  background:radial-gradient(ellipse, #b5e52926, transparent 72%);
+  pointer-events: none;
+  z-index: -2;
+}
+
+/* 3D object behind heading */
+/* .work-results-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url("../img/work-results-shape.webp");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 400px auto;
+  opacity: .8;
+  z-index: -1;
+  pointer-events: none;
+  margin-top: 35px;
+  animation: wheelRotate 12s linear infinite;
+  transform-origin: center center;
+} */
+
+
+/* Heading content */
+.work-results-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin-bottom: 70px;
+}
+
+.work-results-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  color: #eee;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.label-star {
+  color: var(--secondary);
+  font-size: 23px;
+  line-height: 1;
+}
+
+.work-results h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(32px, 4.15vw, 50px);
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -1.8px;
+}
+
+
+/* =========================
+   SKILLS CARDS
+========================= */
+
+.skills-wrapper {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 48px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Individual pill card */
+.skill-card {
+  width: 206px;
+  height: 310px;
+  flex-shrink: 0;
+  background: #111310;
+  border: 2px solid #242424;
+  border-radius: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 67px 20px 30px;
+  transition:
+    transform .4s ease,
+    border-color .4s ease,
+    background .4s ease;
+}
+
+.skill-card:hover {
+  transform: translateY(-10px);
+  border: 1px solid var(--secondary);
+  background: #171914;
+}
+
+/* Percentage */
+.skill-percent {
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+  margin-bottom: 29px;
+}
+
+.skill-percent img{
+  width: 80px;
+  height: auto;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Name */
+.skill-name p {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22px;
+  text-align: center;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1300px) {
+  .skills-wrapper {
+    gap: 25px;
+  }
+
+  .skill-card {
+    width: 190px;
+    height: 320px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .skills-wrapper {
+    gap: 18px;
+  }
+
+  .skill-card {
+    width: 170px;
+    height: 300px;
+    padding-top: 55px;
+  }
+
+  .skill-percent {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 900px) {
+  .work-results {
+    padding-top: 70px;
+  }
+
+  .skills-wrapper {
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 650px;
+  }
+
+  .skill-card {
+    width: 180px;
+    height: 300px;
+  }
+}
+
+@media (max-width: 500px) {
+  .work-results {
+    min-height: auto;
+    padding: 60px 15px 50px;
+  }
+
+  .work-results-content {
+    margin-bottom: 45px;
+  }
+
+  .work-results h2 {
+    font-size: 29px;
+    letter-spacing: -1px;
+  }
+
+  .work-results-label {
+    font-size: 14px;
+  }
+
+  .skills-wrapper {
+    gap: 15px;
+  }
+
+  .skill-card {
+    width: calc(50% - 8px);
+    height: 270px;
+    padding: 45px 10px 25px;
+    border-radius: 90px;
+  }
+
+  .skill-percent {
+    font-size: 28px;
+    margin-bottom: 25px;
+  }
+
+  .skill-icon {
+    margin-bottom: 25px;
+    transform: scale(.85);
+  }
+
+  .skill-name {
+    font-size: 14px;
+  }
+}
+
+/* =========================================
+   SHOWREEL SECTION
+========================================= */
+.spacer {
+  height: 75vh;
+  display: grid;
+  place-items: center;
+  color: #777;
+}
+
+.showreel-section {
+  position: relative;
+  min-height: 125vh;
+  background: #000;
+  overflow: hidden;
+}
+
+.showreel-inner {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  min-height: 620px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+}
+
+.showreel-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: clamp(12px, 1.8vw, 30px);
+
+  white-space: nowrap;
+
+  font-weight: 700;
+  font-size: clamp(42px, 6.2vw, 94px);
+  line-height: 1;
+
+  letter-spacing: -0.045em;
+
+  will-change: transform;
+}
+
+.copyright,
+.showreel-word {
+  will-change: opacity, transform;
+}
+
+.media-wrap {
+  width: clamp(110px, 12.5vw, 190px);
+  height: clamp(46px, 4.8vw, 72px);
+
+  flex-shrink: 0;
+
+  border-radius: 13px;
+  overflow: hidden;
+
+  will-change: width, height, transform, border-radius;
+}
+
+.media-wrap img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (max-width: 700px) {
+
+  .showreel-inner {
+    min-height: 520px;
+    padding: 16px;
+  }
+
+  .showreel-line {
+    gap: 8px;
+    font-size: clamp(30px, 10vw, 60px);
+  }
+
+  .showreel-section {
+    min-height: 115vh;
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2723,4 +3109,264 @@ img {
 
     transform: scale(0.7) rotate(-15deg);
   }
+}
+
+
+/* =========================================
+   PREMIUM FLOATING WHATSAPP BUTTON
+========================================= */
+.whatsapp-float {
+  position: fixed;
+  right: 30px;
+  bottom: 150px;
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #25D366;
+  color: #fff;
+  border-radius: 50%;
+  text-decoration: none;
+  font-size: 30px;
+  z-index: 999998;
+
+  /* Premium Shadow */
+  box-shadow:
+    0 8px 25px rgba(37, 211, 102, 0.28),
+    0 3px 10px rgba(0, 0, 0, 0.12);
+
+  /* Initial Entry State */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(80px) scale(0.7);
+
+  animation:
+    whatsappEntry 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards,
+    whatsappFloat 3.5s ease-in-out 1.5s infinite;
+
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+
+
+/* =========================================
+   ENTRY ANIMATION
+========================================= */
+
+@keyframes whatsappEntry {
+
+  0% {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(80px) scale(0.7);
+  }
+
+  60% {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-8px) scale(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0) scale(1);
+  }
+
+}
+
+
+/* =========================================
+   GENTLE FLOATING EFFECT
+========================================= */
+
+@keyframes whatsappFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-7px);
+  }
+
+}
+
+
+/* =========================================
+   PULSE RING
+========================================= */
+
+.whatsapp-float::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -2px;
+
+  border-radius: 50%;
+
+  border: 2px solid rgba(37, 211, 102, 0.55);
+
+  animation:
+    whatsappPulse 2.5s ease-out infinite;
+
+  pointer-events: none;
+}
+
+
+@keyframes whatsappPulse {
+
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  70% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+
+}
+
+
+/* =========================================
+   ICON
+========================================= */
+
+.whatsapp-float i {
+  position: relative;
+
+  z-index: 2;
+
+  line-height: 1;
+
+  transition:
+    transform 0.35s ease;
+}
+
+
+/* =========================================
+   HOVER EFFECT
+========================================= */
+
+.whatsapp-float:hover {
+
+  color: #fff;
+
+  transform: translateY(-8px) scale(1.08);
+
+  box-shadow:
+    0 15px 40px rgba(37, 211, 102, 0.42),
+    0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+
+.whatsapp-float:hover i {
+  transform: scale(1.12) rotate(8deg);
+}
+
+
+/* =========================================
+   TOOLTIP
+========================================= */
+
+.whatsapp-float::after {
+  content: "Chat with us";
+
+  position: absolute;
+
+  right: 72px;
+  top: 50%;
+
+  transform:
+    translateY(-50%)
+    translateX(10px);
+
+  padding: 9px 14px;
+
+  background: #111;
+
+  color: #fff;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  border-radius: 7px;
+
+  opacity: 0;
+  visibility: hidden;
+
+  pointer-events: none;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.18);
+
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease,
+    transform 0.3s ease;
+}
+
+
+/* Tooltip Arrow */
+
+.whatsapp-float::after {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 7px) 0,
+    100% 50%,
+    calc(100% - 7px) 100%,
+    0 100%
+  );
+}
+
+
+/* Show Tooltip */
+
+.whatsapp-float:hover::after {
+
+  opacity: 1;
+  visibility: visible;
+
+  transform:
+    translateY(-50%)
+    translateX(0);
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .whatsapp-float {
+
+    width: 52px;
+    height: 52px;
+
+    right: 18px;
+    bottom: 85px;
+
+    font-size: 27px;
+
+  }
+
+  /* Hide tooltip on mobile */
+
+  .whatsapp-float::after {
+    display: none;
+  }
+
 }

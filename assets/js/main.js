@@ -548,7 +548,6 @@ document.addEventListener("DOMContentLoaded", function () {
 /* =======================================================
    SERVICES SECTION
 ======================================================= */
-
 document.addEventListener(
   "DOMContentLoaded",
   () => {
@@ -1116,3 +1115,209 @@ document.addEventListener(
 
   }
 );
+
+/* =========================
+   WORK RESULTS ANIMATION
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+
+  const section = document.querySelector(".work-results");
+
+  if (!section) return;
+
+  const content = section.querySelector(".work-results-content");
+  const cards = section.querySelectorAll(".skill-card");
+
+  // Initial state
+  content.style.opacity = "0";
+  content.style.transform = "translateY(25px)";
+  content.style.transition =
+    "opacity .8s ease, transform .8s ease";
+
+  cards.forEach((card, index) => {
+    card.style.opacity = "0";
+    card.style.transform = "translateY(40px)";
+    card.style.transition =
+      `opacity .7s ease ${index * .12}s,
+       transform .7s ease ${index * .12}s`;
+  });
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+
+          content.style.opacity = "1";
+          content.style.transform = "translateY(0)";
+
+          cards.forEach(card => {
+            card.style.opacity = "1";
+            card.style.transform = "translateY(0)";
+          });
+
+          observer.unobserve(section);
+        }
+      });
+    },
+    { threshold: 0.15 }
+  );
+
+  observer.observe(section);
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+(() => {
+
+  const section = document.querySelector("#showreel");
+
+  if (!section) return;
+
+  const media = section.querySelector(".media-wrap");
+  const line = section.querySelector(".showreel-line");
+  const copyright = section.querySelector(".copyright");
+  const showreel = section.querySelector(".showreel-word");
+
+  let ticking = false;
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function update() {
+
+    ticking = false;
+
+    const rect = section.getBoundingClientRect();
+    const viewport = window.innerHeight;
+
+    const start = viewport * 0.88;
+    const end = -viewport * 0.18;
+
+    let progress =
+      (start - rect.top) /
+      (start - end);
+
+    progress = clamp(progress, 0, 1);
+
+    /*
+      Smooth ease-out animation
+    */
+    const eased =
+      1 - Math.pow(1 - progress, 3);
+
+    /*
+      Initial dimensions
+    */
+    const smallWidth =
+      Math.min(
+        190,
+        Math.max(110, window.innerWidth * 0.125)
+      );
+
+    const smallHeight =
+      Math.min(
+        72,
+        Math.max(46, window.innerWidth * 0.048)
+      );
+
+    /*
+      Final dimensions
+    */
+    const finalWidth =
+      Math.min(window.innerWidth, 1000);
+
+    const finalHeight =
+      Math.min(window.innerHeight * 0.55, 430);
+
+    /*
+      Animate image size
+    */
+    const width =
+      smallWidth +
+      (finalWidth - smallWidth) * eased;
+
+    const height =
+      smallHeight +
+      (finalHeight - smallHeight) * eased;
+
+    media.style.width = `${width}px`;
+    media.style.height = `${height}px`;
+
+    /*
+      Rounded → almost square corners
+    */
+    const radius =
+      13 - (13 * eased);
+
+    media.style.borderRadius =
+      `${radius}px`;
+
+    /*
+      Text moves slightly upward
+    */
+    line.style.transform =
+      `translateY(${35 - eased * 35}px)`;
+
+    /*
+      Text gradually fades behind the image
+    */
+    let textOpacity = 1;
+
+    if (eased > 0.70) {
+      textOpacity =
+        1 - ((eased - 0.70) / 0.30);
+    }
+
+    copyright.style.opacity =
+      Math.max(0, textOpacity);
+
+    showreel.style.opacity =
+      Math.max(0, textOpacity);
+
+    /*
+      Final image movement
+    */
+    const y =
+      eased > 0.72
+        ? -(eased - 0.72) * 34
+        : 0;
+
+    media.style.transform =
+      `translateY(${y}px) scale(${1 + eased * 0.02})`;
+  }
+
+  function requestUpdate() {
+
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+  }
+
+  window.addEventListener(
+    "scroll",
+    requestUpdate,
+    { passive: true }
+  );
+
+  window.addEventListener(
+    "resize",
+    requestUpdate
+  );
+
+  update();
+
+})();
