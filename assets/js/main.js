@@ -548,776 +548,693 @@ document.addEventListener("DOMContentLoaded", function () {
 /* =======================================================
    SERVICES SECTION
 ======================================================= */
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
+document.addEventListener("DOMContentLoaded",()=>{
+ const section=document.querySelector(".services-section");
+ const stage=document.querySelector(".heading-scroll-space");
+ const title=document.querySelector(".services-title");
+ const cards=[...document.querySelectorAll(".service-card")];
+ const viewAll=document.querySelector(".view-all");
+ const viewRow=document.querySelector(".view-all-row");
+ const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+ let pending=false;
+ const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+ const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+ function update(){
+   if(!section||!stage||!title)return;
+   const mobile=innerWidth<=700;
+   if(reduced){title.style.transform="scale(1)";title.style.opacity="1";cards.forEach(card=>{card.style.transform="";card.style.filter="";});viewAll?.classList.add("is-visible");return;}
+   if(mobile){title.style.transform="scale(1)";title.style.opacity="1";cards.forEach(card=>{card.style.transform="";card.style.filter="";card.classList.remove("is-tilting");});return;}
+   // Scroll-controlled title animation completes before the first card reaches its sticky position.
+   const stageTop=stage.getBoundingClientRect().top+scrollY;
+   const start=stageTop-innerHeight*.22;
+   const finish=stageTop+stage.offsetHeight*.30;
+   const p=clamp((scrollY-start)/Math.max(1,finish-start),0,1);
+   // One continuous zoom-in only. Once the heading reaches its final size,
+   // hold it there; do not start a second zoom-out phase or overlap it with cards.
+   const q=ease(p);
+   const scale=.18+.82*q;
+   const opacity=.03+.97*q;
+   const y=18*(1-q);
+   title.style.transform=`translate3d(0,${y}px,0) scale(${scale})`;
+   title.style.opacity=String(opacity);
+   // As the next card overlaps, the card beneath gently hinges backward from its top edge.
+   const pinTop=61;
+   cards.forEach((card,i)=>{
+     const rect=card.getBoundingClientRect();const next=cards[i+1];
+     if(next){const nr=next.getBoundingClientRect();const overlap=clamp((pinTop+rect.height*.32-nr.top)/(rect.height*.32),0,1);const eased=ease(overlap);
+       card.style.transform=`perspective(1400px) rotateX(${-3.2*eased}deg) translate3d(0,${-8*eased}px,0) scale(${1-.025*eased})`;
+       card.style.filter=`brightness(${1-.08*eased})`;card.classList.toggle("is-tilting",overlap>.03);
+     }else{card.style.transform="";card.style.filter="";card.classList.remove("is-tilting");}
+   });
+ }
+ addEventListener("scroll",()=>{if(!pending){requestAnimationFrame(()=>{update();pending=false});pending=true}},{passive:true});
+ addEventListener("resize",update);update();
+ // CTA enters when the area after the third card reaches the viewport.
+ if(viewRow&&viewAll&&"IntersectionObserver" in window){const ctaObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting)viewAll.classList.add("is-visible");else if(entry.boundingClientRect.top>innerHeight)viewAll.classList.remove("is-visible");});},{threshold:.18,rootMargin:"0px 0px -8% 0px"});ctaObserver.observe(viewRow);}else viewAll?.classList.add("is-visible");
+ const menu=document.querySelector(".menu");menu?.addEventListener("click",()=>{const nav=document.querySelector(".nav-links");const open=nav.dataset.open==="1";nav.dataset.open=open?"0":"1";Object.assign(nav.style,open?{display:""}:{display:"flex",position:"absolute",top:"56px",left:"0",right:"0",padding:"18px",background:"#13202d",flexDirection:"column",gap:"18px"});});
+});
 
-    /* ===================================================
-       ELEMENTS
-    =================================================== */
+/* =======================================================
+   SHOWREEL SCROLL ANIMATION
+======================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const track = document.getElementById("showreelTrack");
+  const stage = document.getElementById("showreelStage");
+  const content = document.getElementById("showreelContent");
+  const placeholder = document.getElementById("showreelPlaceholder");
+  const imageLayer = document.getElementById("showreelImageLayer");
+  const image = document.getElementById("showreelImage");
+  const shade = document.getElementById("showreelShade");
+  const overlay = document.getElementById("showreelOverlay");
+  const playButton = document.getElementById("showreelPlayBtn");
 
-    const services =
-      document.querySelector(
-        ".services"
+  const videoModal = document.getElementById("showreelVideoModal");
+  const videoPlayer = document.getElementById("showreelVideoPlayer");
+  const closeButton = document.getElementById("showreelVideoClose");
+
+  if (
+    track && stage && content && placeholder &&
+    imageLayer && image && shade && overlay
+  ) {
+    let ticking = false;
+
+    const clamp = (value, min, max) =>
+      Math.min(Math.max(value, min), max);
+
+    const smooth = (t) =>
+      t * t * (3 - 2 * t);
+
+    function updateShowreel() {
+      ticking = false;
+
+      const trackRect = track.getBoundingClientRect();
+
+      // Scroll progress across the pinned Showreel section
+      const scrollDistance = Math.max(
+        track.offsetHeight - stage.offsetHeight,
+        1
       );
 
-    const heading =
-      document.querySelector(
-        ".services-title"
+      const progress = clamp(
+        -trackRect.top / scrollDistance,
+        0,
+        1
       );
 
-    const cards =
-      [
-        ...document.querySelectorAll(
-          ".service-card"
-        )
-      ];
+      const stageRect = stage.getBoundingClientRect();
+      const placeholderRect = placeholder.getBoundingClientRect();
 
+      // Thumbnail position relative to the fullscreen stage
+      const startLeft = placeholderRect.left - stageRect.left;
+      const startTop = placeholderRect.top - stageRect.top;
+      const startWidth = placeholderRect.width;
+      const startHeight = placeholderRect.height;
 
-    if (!services) return;
-
-
-    /* ===================================================
-       HEADING ENTRANCE
-    =================================================== */
-
-    const headingObserver =
-      new IntersectionObserver(
-        (entries) => {
-
-          entries.forEach(
-            (entry) => {
-
-              if (
-                entry.isIntersecting
-              ) {
-
-                services.classList.add(
-                  "is-visible"
-                );
-
-                headingObserver.unobserve(
-                  entry.target
-                );
-
-              }
-
-            }
-          );
-
-        },
-        {
-          threshold: 0.08
-        }
+      // Zoom completes early, then stays fullscreen
+      const zoomEnd = 0.42;
+      const zoomProgress = smooth(
+        clamp(progress / zoomEnd, 0, 1)
       );
 
-
-    headingObserver.observe(
-      services
-    );
-
-
-    /* ===================================================
-       SMOOTH SCROLL ENGINE
-    =================================================== */
-
-    let currentScroll =
-      window.scrollY;
-
-    let targetScroll =
-      window.scrollY;
-
-    let ticking =
-      false;
-
-
-    /*
-      Lower number =
-      slower and smoother.
-
-      0.085 gives a cinematic
-      smooth scrolling effect.
-    */
-
-    const smoothness =
-      0.085;
-
-
-    /* ===================================================
-       STICKY TOP
-    =================================================== */
-
-    function getStickyTop() {
+      const left = startLeft * (1 - zoomProgress);
+      const top = startTop * (1 - zoomProgress);
 
       const width =
-        window.innerWidth;
+        startWidth +
+        (stage.clientWidth - startWidth) * zoomProgress;
 
+      const height =
+        startHeight +
+        (stage.clientHeight - startHeight) * zoomProgress;
 
-      if (width <= 700) {
+      Object.assign(imageLayer.style, {
+        left: `${left}px`,
+        top: `${top}px`,
+        width: `${width}px`,
+        height: `${height}px`,
+        borderRadius: `${15 * (1 - zoomProgress)}px`
+      });
 
-        return 20;
+      // Fade out the original copyright row
+      content.style.opacity = String(
+        1 - smooth(clamp(progress / 0.14, 0, 1))
+      );
 
+      // Subtle darkening toward the next section
+      const darkProgress = smooth(
+        clamp((progress - 0.58) / 0.38, 0, 1)
+      );
+
+      shade.style.opacity = String(darkProgress * 0.32);
+
+      // Reverse naturally when scrolling upward
+      if (zoomProgress >= 0.88) {
+        overlay.classList.add("is-visible");
+      } else {
+        overlay.classList.remove("is-visible");
       }
-
-
-      if (width <= 1000) {
-
-        return 55;
-
-      }
-
-
-      return 68;
-
     }
 
-
-    /* ===================================================
-       UPDATE TARGET SCROLL
-    =================================================== */
-
-    function updateTarget() {
-
-      targetScroll =
-        window.scrollY;
-
-
+    function requestUpdate() {
       if (!ticking) {
-
-        ticking =
-          true;
-
-        requestAnimationFrame(
-          smoothAnimation
-        );
-
+        ticking = true;
+        requestAnimationFrame(updateShowreel);
       }
-
     }
 
+    window.addEventListener("scroll", requestUpdate, {
+      passive: true
+    });
 
-    /* ===================================================
-       MAIN SMOOTH ANIMATION
-    =================================================== */
+    window.addEventListener("resize", requestUpdate);
 
-    function smoothAnimation() {
-
-      currentScroll +=
-        (
-          targetScroll -
-          currentScroll
-        ) *
-        smoothness;
-
-
-      /*
-        Finish tiny remaining movement.
-      */
-
-      if (
-        Math.abs(
-          targetScroll -
-          currentScroll
-        ) < 0.025
-      ) {
-
-        currentScroll =
-          targetScroll;
-
-      }
-
-
-      updateHeading();
-
-      updateCards();
-
-
-      /*
-        Continue animation while
-        scroll is settling.
-      */
-
-      if (
-        Math.abs(
-          targetScroll -
-          currentScroll
-        ) > 0.025
-      ) {
-
-        requestAnimationFrame(
-          smoothAnimation
-        );
-
-      } else {
-
-        ticking =
-          false;
-
-      }
-
+    if (image.complete) {
+      updateShowreel();
+    } else {
+      image.addEventListener("load", requestUpdate, { once: true });
+      image.addEventListener("error", () => {
+        console.error("Showreel image could not be loaded.");
+      }, { once: true });
     }
-
-
-    /* ===================================================
-       HEADING SCROLL ANIMATION
-    =================================================== */
-
-    function updateHeading() {
-
-      if (!heading) return;
-
-
-      const sectionTop =
-        services.offsetTop;
-
-
-      const relativeScroll =
-        currentScroll -
-        sectionTop;
-
-
-      /*
-        Heading movement area.
-      */
-
-      let progress =
-        relativeScroll /
-        620;
-
-
-      progress =
-        Math.max(
-          0,
-          Math.min(
-            1,
-            progress
-          )
-        );
-
-
-      /*
-        Premium cubic easing.
-      */
-
-      const eased =
-        1 -
-        Math.pow(
-          1 - progress,
-          3
-        );
-
-
-      /* -----------------------------------------------
-         MOVE UP
-      ------------------------------------------------ */
-
-      const y =
-        eased * -36;
-
-
-      /* -----------------------------------------------
-         HEADING SCALE
-
-         1.00
-           ↓
-         1.055
-           ↓
-         1.025
-      ------------------------------------------------ */
-
-      let scale;
-
-
-      if (
-        progress < 0.45
-      ) {
-
-        const grow =
-          progress /
-          0.45;
-
-
-        scale =
-          1 +
-          grow *
-          0.055;
-
-      } else {
-
-        const settle =
-          (
-            progress -
-            0.45
-          ) /
-          0.55;
-
-
-        scale =
-          1.055 -
-          settle *
-          0.030;
-
-      }
-
-
-      /* -----------------------------------------------
-         SUBTLE VERTICAL STRETCH
-      ------------------------------------------------ */
-
-      const stretch =
-        1 +
-        Math.sin(
-          progress *
-          Math.PI
-        ) *
-        0.014;
-
-
-      /* -----------------------------------------------
-         APPLY
-      ------------------------------------------------ */
-
-      if (
-        services.classList.contains(
-          "is-visible"
-        )
-      ) {
-
-        heading.style.transform =
-          "translate3d(0, " + y + "px, 0) scale(" +
-          scale + ", " + (scale * stretch) + ")";
-
-      }
-
-    }
-
-
-    /* ===================================================
-       CARD ANIMATION
-    =================================================== */
-
-    function updateCards() {
-
-      const stickyTop =
-        getStickyTop();
-
-
-      cards.forEach(
-        (card) => {
-
-          /*
-            Original card position.
-          */
-
-          const cardTop =
-            card.offsetTop;
-
-
-          /*
-            Smooth viewport position.
-          */
-
-          const relativeTop =
-            cardTop -
-            currentScroll;
-
-
-          /*
-            Keep card transform neutral.
-            CSS sticky handles stacking.
-          */
-
-          card.style.transform =
-            "translate3d(0, 0, 0)";
-
-
-          /* ===========================================
-             IMAGE
-          =========================================== */
-
-          const image =
-            card.querySelector(
-              ".service-image img"
-            );
-
-
-          if (!image) return;
-
-
-          /*
-            Image parallax progress.
-          */
-
-          let imageProgress =
-            (
-              relativeTop -
-              stickyTop
-            ) /
-            window.innerHeight;
-
-
-          imageProgress =
-            Math.max(
-              -1,
-              Math.min(
-                1,
-                imageProgress
-              )
-            );
-
-
-          /*
-            Very subtle movement.
-          */
-
-          const imageMove =
-            imageProgress *
-            6;
-
-
-          /*
-            IMPORTANT:
-
-            Do NOT use:
-
-            image.style.transform
-
-            because that would overwrite
-            CSS hover zoom.
-
-            We only update the CSS variable.
-          */
-
-          image.style.setProperty(
-            "--image-y",
-            `${imageMove}px`
-          );
-
-        }
-      );
-
-    }
-
-
-    /* ===================================================
-       SCROLL EVENT
-    =================================================== */
-
-    window.addEventListener(
-      "scroll",
-      updateTarget,
-      {
-        passive: true
-      }
-    );
-
-
-    /* ===================================================
-       RESIZE
-    =================================================== */
-
-    window.addEventListener(
-      "resize",
-      () => {
-
-        targetScroll =
-          window.scrollY;
-
-        currentScroll =
-          window.scrollY;
-
-
-        updateHeading();
-
-        updateCards();
-
-      }
-    );
-
-
-    /* ===================================================
-       TAG HOVER
-    =================================================== */
-
-    const tags =
-      document.querySelectorAll(
-        ".service-tags span"
-      );
-
-
-    tags.forEach(
-      (tag) => {
-
-        tag.addEventListener(
-          "mouseenter",
-          () => {
-
-            tag.style.transform =
-              "translateY(-3px) scale(1.03)";
-
-          }
-        );
-
-
-        tag.addEventListener(
-          "mouseleave",
-          () => {
-
-            tag.style.transform =
-              "translateY(0) scale(1)";
-
-          }
-        );
-
-      }
-    );
-
-
-    /* ===================================================
-       INITIAL
-    =================================================== */
-
-    services.classList.add(
-      "is-visible"
-    );
-
-
-    updateHeading();
-
-    updateCards();
-
-
-    /* ===================================================
-       REDUCED MOTION
-    =================================================== */
-
-    const reducedMotion =
-      window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      );
-
-
-    if (
-      reducedMotion.matches
-    ) {
-
-      services.classList.add(
-        "is-visible"
-      );
-
-      currentScroll =
-        window.scrollY;
-
-      targetScroll =
-        window.scrollY;
-
-    }
-
   }
-);
+
+  // =========================================
+  // VIDEO MODAL: OPEN AND CLOSE IN SAME TAB
+  // =========================================
+
+  function openVideo() {
+    if (!videoModal || !videoPlayer) return;
+
+    videoModal.classList.add("is-open");
+    videoModal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("showreel-video-open");
+
+    const promise = videoPlayer.play();
+
+    if (promise) {
+      promise.catch((error) => {
+        console.warn(
+          "Video could not autoplay. Press play in the video controls.",
+          error
+        );
+      });
+    }
+  }
+
+  function closeVideo() {
+    if (!videoModal || !videoPlayer) return;
+
+    videoPlayer.pause();
+
+    try {
+      videoPlayer.currentTime = 0;
+    } catch (error) {
+      console.warn("Could not reset video position.", error);
+    }
+
+    videoModal.classList.remove("is-open");
+    videoModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("showreel-video-open");
+  }
+
+  playButton?.addEventListener("click", openVideo);
+  closeButton?.addEventListener("click", closeVideo);
+
+  // Close with Escape key
+  document.addEventListener("keydown", (event) => {
+    if (
+      event.key === "Escape" &&
+      videoModal?.classList.contains("is-open")
+    ) {
+      closeVideo();
+    }
+  });
+});
+
+/* =====================================
+   PROJECTS SCROLL REVEAL
+===================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  const projectsSection = document.querySelector("#projects");
+  const heading = document.querySelector("#projects .projects-heading h2");
+  const projectCards = document.querySelectorAll(
+    "#projects .project-card"
+  );
+
+  if (!projectsSection || !heading) return;
+
+  const clamp = (value, min, max) =>
+    Math.min(Math.max(value, min), max);
+
+  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+  let ticking = false;
+
+  function updateHeadingZoom() {
+    ticking = false;
+
+    const rect = projectsSection.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+
+    // Progress from when Projects enters the viewport
+    const start = viewportHeight * 0.85;
+    const end = viewportHeight * 0.15;
+
+    const distance = rect.height + start - end;
+
+    const progress = clamp(
+      (start - rect.top) / Math.max(distance, 1),
+      0,
+      1
+    );
+
+    // Zoom from small to normal size
+    const zoomProgress = easeOut(
+      clamp(progress / 0.45, 0, 1)
+    );
+
+    const scale = 0.45 + (1 - 0.45) * zoomProgress;
+
+    heading.style.transform = `scale(${scale})`;
+  }
+
+  function requestHeadingUpdate() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(updateHeadingZoom);
+    }
+  }
+
+  window.addEventListener("scroll", requestHeadingUpdate, {
+    passive: true
+  });
+
+  window.addEventListener("resize", requestHeadingUpdate);
+
+  updateHeadingZoom();
+
+  // Reveal project cards on scroll
+  if (
+    projectCards.length &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    const observer = new IntersectionObserver(
+      (entries, observerInstance) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          const index = [...projectCards].indexOf(entry.target);
+
+          entry.target.style.transitionDelay =
+            `${(index % 2) * 120}ms`;
+
+          entry.target.classList.add("is-revealed");
+          observerInstance.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.12,
+        rootMargin: "0px 0px -40px 0px"
+      }
+    );
+
+    projectCards.forEach((card) => observer.observe(card));
+  } else {
+    projectCards.forEach((card) => {
+      card.classList.add("is-revealed");
+    });
+  }
+});
+
 
 /* =========================
-   WORK RESULTS ANIMATION
+   AWARDS SCROLL ANIMATION
 ========================= */
-document.addEventListener("DOMContentLoaded", () => {
 
-  const section = document.querySelector(".work-results");
+document.addEventListener("DOMContentLoaded", () => {
+  const section = document.querySelector("#scroll-awards");
 
   if (!section) return;
 
-  const content = section.querySelector(".work-results-content");
-  const cards = section.querySelectorAll(".skill-card");
+  const headingLines = section.querySelectorAll(".awards-heading span");
+  const awardRows = section.querySelectorAll(".awards-row");
 
-  // Initial state
-  content.style.opacity = "0";
-  content.style.transform = "translateY(25px)";
-  content.style.transition =
-    "opacity .8s ease, transform .8s ease";
-
-  cards.forEach((card, index) => {
-    card.style.opacity = "0";
-    card.style.transform = "translateY(40px)";
-    card.style.transition =
-      `opacity .7s ease ${index * .12}s,
-       transform .7s ease ${index * .12}s`;
-  });
-
-  const observer = new IntersectionObserver(
+  const revealObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-
-          content.style.opacity = "1";
-          content.style.transform = "translateY(0)";
-
-          cards.forEach(card => {
-            card.style.opacity = "1";
-            card.style.transform = "translateY(0)";
-          });
-
-          observer.unobserve(section);
+          entry.target.classList.add("is-visible");
+        } else {
+          // Remove this line if animations should play only once.
+          entry.target.classList.remove("is-visible");
         }
       });
     },
-    { threshold: 0.15 }
+    {
+      threshold: 0.15,
+      rootMargin: "0px 0px -35px 0px"
+    }
   );
 
-  observer.observe(section);
+  headingLines.forEach((line) => {
+    revealObserver.observe(line);
+  });
 
+  awardRows.forEach((row, index) => {
+    row.style.transitionDelay = `${index * 100}ms`;
+    revealObserver.observe(row);
+  });
 });
 
 
 
-
-
-
-
-
-
-
-
-
-
-(() => {
-
-  const section = document.querySelector("#showreel");
-
-  if (!section) return;
-
-  const media = section.querySelector(".media-wrap");
-  const line = section.querySelector(".showreel-line");
-  const copyright = section.querySelector(".copyright");
-  const showreel = section.querySelector(".showreel-word");
-
-  let ticking = false;
-
-  function clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max);
-  }
-
-  function update() {
-
-    ticking = false;
-
-    const rect = section.getBoundingClientRect();
-    const viewport = window.innerHeight;
-
-    const start = viewport * 0.88;
-    const end = -viewport * 0.18;
-
-    let progress =
-      (start - rect.top) /
-      (start - end);
-
-    progress = clamp(progress, 0, 1);
-
-    /*
-      Smooth ease-out animation
-    */
-    const eased =
-      1 - Math.pow(1 - progress, 3);
-
-    /*
-      Initial dimensions
-    */
-    const smallWidth =
-      Math.min(
-        190,
-        Math.max(110, window.innerWidth * 0.125)
-      );
-
-    const smallHeight =
-      Math.min(
-        72,
-        Math.max(46, window.innerWidth * 0.048)
-      );
-
-    /*
-      Final dimensions
-    */
-    const finalWidth =
-      Math.min(window.innerWidth, 1000);
-
-    const finalHeight =
-      Math.min(window.innerHeight * 0.55, 430);
-
-    /*
-      Animate image size
-    */
-    const width =
-      smallWidth +
-      (finalWidth - smallWidth) * eased;
-
-    const height =
-      smallHeight +
-      (finalHeight - smallHeight) * eased;
-
-    media.style.width = `${width}px`;
-    media.style.height = `${height}px`;
-
-    /*
-      Rounded → almost square corners
-    */
-    const radius =
-      13 - (13 * eased);
-
-    media.style.borderRadius =
-      `${radius}px`;
-
-    /*
-      Text moves slightly upward
-    */
-    line.style.transform =
-      `translateY(${35 - eased * 35}px)`;
-
-    /*
-      Text gradually fades behind the image
-    */
-    let textOpacity = 1;
-
-    if (eased > 0.70) {
-      textOpacity =
-        1 - ((eased - 0.70) / 0.30);
-    }
-
-    copyright.style.opacity =
-      Math.max(0, textOpacity);
-
-    showreel.style.opacity =
-      Math.max(0, textOpacity);
-
-    /*
-      Final image movement
-    */
-    const y =
-      eased > 0.72
-        ? -(eased - 0.72) * 34
-        : 0;
-
-    media.style.transform =
-      `translateY(${y}px) scale(${1 + eased * 0.02})`;
-  }
-
-  function requestUpdate() {
-
-    if (!ticking) {
-      ticking = true;
-      requestAnimationFrame(update);
-    }
-
-  }
-
-  window.addEventListener(
-    "scroll",
-    requestUpdate,
-    { passive: true }
+/* =========================
+   OUR TEAM SECTION
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const cards = document.querySelectorAll(
+    ".team-section .team-stage .team-card"
   );
 
-  window.addEventListener(
-    "resize",
-    requestUpdate
-  );
+  cards.forEach((card) => {
+    // Clear any transforms left by the old scroll animation.
+    card.style.removeProperty("transform");
+    card.style.removeProperty("opacity");
 
-  update();
+    card.setAttribute("tabindex", "0");
 
-})();
+    card.addEventListener("pointerenter", () => {
+      card.classList.add("is-hovered");
+    });
+
+    card.addEventListener("pointerleave", () => {
+      card.classList.remove("is-hovered");
+    });
+
+    card.addEventListener("focusin", () => {
+      card.classList.add("is-hovered");
+    });
+
+    card.addEventListener("focusout", (event) => {
+      if (!card.contains(event.relatedTarget)) {
+        card.classList.remove("is-hovered");
+      }
+    });
+  });
+});
+
+/* =========================
+   TESTIMONIALS SECTION
+========================= */
+
+const testimonials = [
+
+    {
+        title: "I'VE TRIED MANY SIMILAR PRODUCTS, BUT NOTHING COMPARES TO THIS ONE. THE QUALITY IS TOP-NOTCH, AND I'VE SEEN REAL, NOTICEABLE RESULTS!",
+
+        description: "We are a forward-thinking digital agency dedicated to helping brands grow, connect, and succeed in the online world. Since our beginning, we've combined creativity, strategy.",
+
+        name: "Andrew D. Smith",
+        role: "Researcher",
+
+        image: "assets/img/testi-1.jpg",
+
+        avatar: "assets/img/testi-1.jpg"
+    },
+
+    {
+        title: "WORKING WITH THIS TEAM HAS BEEN AN ABSOLUTE GAME CHANGER FOR OUR BUSINESS AND ONLINE PRESENCE!",
+
+        description: "Their creative approach, attention to detail, and strategic thinking helped us achieve incredible results. We couldn't be happier with the experience.",
+
+        name: "Jessica Miller",
+        role: "Marketing Director",
+
+        image: "assets/img/testi-2.jpg",
+
+        avatar: "assets/img/testi-2.jpg"
+    },
+
+    {
+        title: "EXCEPTIONAL SERVICE, INCREDIBLE CREATIVITY, AND A TEAM THAT TRULY UNDERSTANDS WHAT YOUR BRAND NEEDS!",
+
+        description: "From the initial consultation to the final delivery, every step was handled professionally. Their dedication and innovative ideas exceeded our expectations.",
+
+        name: "Michael Johnson",
+        role: "Business Owner",
+
+        image: "https://plus.unsplash.com/premium_photo-1661593195372-874ca9d29713?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
+
+        avatar: "https://plus.unsplash.com/premium_photo-1661593195372-874ca9d29713?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D"
+    }
+
+];
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const testimonialSlide =
+    document.getElementById("testimonialSlide");
+
+const testimonialImage =
+    document.getElementById("testimonialImage");
+
+const testimonialTitle =
+    document.getElementById("testimonialTitle");
+
+const testimonialDesc =
+    document.getElementById("testimonialDesc");
+
+const authorImage =
+    document.getElementById("authorImage");
+
+const authorName =
+    document.getElementById("authorName");
+
+const authorRole =
+    document.getElementById("authorRole");
+
+const nextButton =
+    document.getElementById("nextTestimonial");
+
+const prevButton =
+    document.getElementById("prevTestimonial");
+
+
+/* =========================================
+   SETTINGS
+========================================= */
+
+let currentIndex = 0;
+let isAnimating = false;
+let autoSlide = null;
+
+/* Change testimonial every 6 seconds */
+const slideInterval = 5000;
+
+/* Fade-out duration */
+const exitDuration = 400;
+
+/* Content entrance animation duration */
+const entranceDuration = 1100;
+
+
+/* =========================================
+   PRELOAD IMAGES
+========================================= */
+
+testimonials.forEach((item) => {
+
+    const mainImg = new Image();
+    mainImg.src = item.image;
+
+    const profileImg = new Image();
+    profileImg.src = item.avatar;
+
+});
+
+
+/* =========================================
+   CHANGE TESTIMONIAL
+========================================= */
+
+function changeTestimonial(index) {
+
+    if (isAnimating) return;
+
+    isAnimating = true;
+
+    /* Remove previous entrance state */
+    testimonialSlide.classList.remove("fade-in");
+
+    /* Start smooth exit */
+    testimonialSlide.classList.add("fade-out");
+
+    setTimeout(() => {
+
+        /* Calculate next slide */
+        currentIndex =
+            (index + testimonials.length) % testimonials.length;
+
+        const data = testimonials[currentIndex];
+
+        /* Update text content */
+        testimonialTitle.textContent = data.title;
+
+        testimonialDesc.textContent = data.description;
+
+        authorName.textContent = data.name;
+
+        authorRole.textContent = data.role;
+
+        /* Update images */
+        testimonialImage.src = data.image;
+
+        authorImage.src = data.avatar;
+
+        /* Remove exit animation */
+        testimonialSlide.classList.remove("fade-out");
+
+        /* Restart CSS animations */
+        void testimonialSlide.offsetWidth;
+
+        /* Start smooth entrance */
+        testimonialSlide.classList.add("fade-in");
+
+        /* Allow interaction after animation */
+        setTimeout(() => {
+
+            testimonialSlide.classList.remove("fade-in");
+
+            isAnimating = false;
+
+        }, entranceDuration);
+
+    }, exitDuration);
+
+}
+
+
+/* =========================================
+   NEXT BUTTON
+========================================= */
+
+nextButton.addEventListener("click", () => {
+
+    if (isAnimating) return;
+
+    changeTestimonial(currentIndex + 1);
+
+    resetAutoSlide();
+
+});
+
+
+/* =========================================
+   PREVIOUS BUTTON
+========================================= */
+
+prevButton.addEventListener("click", () => {
+
+    if (isAnimating) return;
+
+    changeTestimonial(currentIndex - 1);
+
+    resetAutoSlide();
+
+});
+
+
+/* =========================================
+   AUTO SLIDER
+========================================= */
+
+function startAutoSlide() {
+
+    clearInterval(autoSlide);
+
+    autoSlide = setInterval(() => {
+
+        if (!isAnimating) {
+
+            changeTestimonial(currentIndex + 1);
+
+        }
+
+    }, slideInterval);
+
+}
+
+
+/* =========================================
+   RESET AUTO SLIDER
+========================================= */
+
+function resetAutoSlide() {
+
+    startAutoSlide();
+
+}
+
+
+/* =========================================
+   PAUSE WHEN TAB IS HIDDEN
+========================================= */
+
+document.addEventListener("visibilitychange", () => {
+
+    if (document.hidden) {
+
+        clearInterval(autoSlide);
+
+    } else {
+
+        startAutoSlide();
+
+    }
+
+});
+
+
+/* =========================================
+   START SLIDER
+========================================= */
+
+startAutoSlide();
+
+
+/* =========================================
+   BLOGS SECTION
+========================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const cards = document.querySelectorAll(".blog-card");
+
+  cards.forEach((card) => {
+    let returnTimer;
+
+    card.addEventListener("mouseenter", () => {
+      clearTimeout(returnTimer);
+
+      // Reset first so the animation can replay every hover.
+      card.classList.remove("image-moving");
+      void card.offsetWidth;
+
+      // Slide the image to the left.
+      card.classList.add("image-moving");
+
+      // Automatically return to the original position.
+      returnTimer = setTimeout(() => {
+        card.classList.remove("image-moving");
+      }, 450);
+    });
+
+    card.addEventListener("mouseleave", () => {
+      // If the mouse leaves early, return immediately.
+      clearTimeout(returnTimer);
+      card.classList.remove("image-moving");
+    });
+  });
+});
