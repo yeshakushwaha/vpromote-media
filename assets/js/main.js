@@ -544,54 +544,131 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
 /* =======================================================
    SERVICES SECTION
 ======================================================= */
-document.addEventListener("DOMContentLoaded",()=>{
- const section=document.querySelector(".services-section");
- const stage=document.querySelector(".heading-scroll-space");
- const title=document.querySelector(".services-title");
- const cards=[...document.querySelectorAll(".service-card")];
- const viewAll=document.querySelector(".view-all");
- const viewRow=document.querySelector(".view-all-row");
- const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
- let pending=false;
- const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
- const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
- function update(){
-   if(!section||!stage||!title)return;
-   const mobile=innerWidth<=700;
-   if(reduced){title.style.transform="scale(1)";title.style.opacity="1";cards.forEach(card=>{card.style.transform="";card.style.filter="";});viewAll?.classList.add("is-visible");return;}
-   if(mobile){title.style.transform="scale(1)";title.style.opacity="1";cards.forEach(card=>{card.style.transform="";card.style.filter="";card.classList.remove("is-tilting");});return;}
-   // Scroll-controlled title animation completes before the first card reaches its sticky position.
-   const stageTop=stage.getBoundingClientRect().top+scrollY;
-   const start=stageTop-innerHeight*.22;
-   const finish=stageTop+stage.offsetHeight*.30;
-   const p=clamp((scrollY-start)/Math.max(1,finish-start),0,1);
-   // One continuous zoom-in only. Once the heading reaches its final size,
-   // hold it there; do not start a second zoom-out phase or overlap it with cards.
-   const q=ease(p);
-   const scale=.18+.82*q;
-   const opacity=.03+.97*q;
-   const y=18*(1-q);
-   title.style.transform=`translate3d(0,${y}px,0) scale(${scale})`;
-   title.style.opacity=String(opacity);
-   // As the next card overlaps, the card beneath gently hinges backward from its top edge.
-   const pinTop=61;
-   cards.forEach((card,i)=>{
-     const rect=card.getBoundingClientRect();const next=cards[i+1];
-     if(next){const nr=next.getBoundingClientRect();const overlap=clamp((pinTop+rect.height*.32-nr.top)/(rect.height*.32),0,1);const eased=ease(overlap);
-       card.style.transform=`perspective(1400px) rotateX(${-3.2*eased}deg) translate3d(0,${-8*eased}px,0) scale(${1-.025*eased})`;
-       card.style.filter=`brightness(${1-.08*eased})`;card.classList.toggle("is-tilting",overlap>.03);
-     }else{card.style.transform="";card.style.filter="";card.classList.remove("is-tilting");}
-   });
- }
- addEventListener("scroll",()=>{if(!pending){requestAnimationFrame(()=>{update();pending=false});pending=true}},{passive:true});
- addEventListener("resize",update);update();
- // CTA enters when the area after the third card reaches the viewport.
- if(viewRow&&viewAll&&"IntersectionObserver" in window){const ctaObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting)viewAll.classList.add("is-visible");else if(entry.boundingClientRect.top>innerHeight)viewAll.classList.remove("is-visible");});},{threshold:.18,rootMargin:"0px 0px -8% 0px"});ctaObserver.observe(viewRow);}else viewAll?.classList.add("is-visible");
- const menu=document.querySelector(".menu");menu?.addEventListener("click",()=>{const nav=document.querySelector(".nav-links");const open=nav.dataset.open==="1";nav.dataset.open=open?"0":"1";Object.assign(nav.style,open?{display:""}:{display:"flex",position:"absolute",top:"56px",left:"0",right:"0",padding:"18px",background:"#13202d",flexDirection:"column",gap:"18px"});});
+document.addEventListener("DOMContentLoaded", () => {
+  const section = document.querySelector(".services-section");
+  const stage = document.querySelector(".heading-scroll-space");
+  const title = document.querySelector(".services-title");
+  const cards = [...document.querySelectorAll(".service-card")];
+  const viewAll = document.querySelector(".view-all");
+  const viewRow = document.querySelector(".view-all-row");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let pending = false;
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const ease = (t) =>
+    t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  function update() {
+    if (!section || !stage || !title) return;
+    const mobile = innerWidth <= 700;
+    if (reduced) {
+      title.style.transform = "scale(1)";
+      title.style.opacity = "1";
+      cards.forEach((card) => {
+        card.style.transform = "";
+        card.style.filter = "";
+      });
+      viewAll?.classList.add("is-visible");
+      return;
+    }
+    if (mobile) {
+      title.style.transform = "scale(1)";
+      title.style.opacity = "1";
+      cards.forEach((card) => {
+        card.style.transform = "";
+        card.style.filter = "";
+        card.classList.remove("is-tilting");
+      });
+      return;
+    }
+    // Scroll-controlled title animation completes before the first card reaches its sticky position.
+    const stageTop = stage.getBoundingClientRect().top + scrollY;
+    const start = stageTop - innerHeight * 0.22;
+    const finish = stageTop + stage.offsetHeight * 0.3;
+    const p = clamp((scrollY - start) / Math.max(1, finish - start), 0, 1);
+    // One continuous zoom-in only. Once the heading reaches its final size,
+    // hold it there; do not start a second zoom-out phase or overlap it with cards.
+    const q = ease(p);
+    const scale = 0.18 + 0.82 * q;
+    const opacity = 0.03 + 0.97 * q;
+    const y = 18 * (1 - q);
+    title.style.transform = `translate3d(0,${y}px,0) scale(${scale})`;
+    title.style.opacity = String(opacity);
+    // As the next card overlaps, the card beneath gently hinges backward from its top edge.
+    const pinTop = 61;
+    cards.forEach((card, i) => {
+      const rect = card.getBoundingClientRect();
+      const next = cards[i + 1];
+      if (next) {
+        const nr = next.getBoundingClientRect();
+        const overlap = clamp(
+          (pinTop + rect.height * 0.32 - nr.top) / (rect.height * 0.32),
+          0,
+          1,
+        );
+        const eased = ease(overlap);
+        card.style.transform = `perspective(1400px) rotateX(${-3.2 * eased}deg) translate3d(0,${-8 * eased}px,0) scale(${1 - 0.025 * eased})`;
+        card.style.filter = `brightness(${1 - 0.08 * eased})`;
+        card.classList.toggle("is-tilting", overlap > 0.03);
+      } else {
+        card.style.transform = "";
+        card.style.filter = "";
+        card.classList.remove("is-tilting");
+      }
+    });
+  }
+  addEventListener(
+    "scroll",
+    () => {
+      if (!pending) {
+        requestAnimationFrame(() => {
+          update();
+          pending = false;
+        });
+        pending = true;
+      }
+    },
+    { passive: true },
+  );
+  addEventListener("resize", update);
+  update();
+  // CTA enters when the area after the third card reaches the viewport.
+  if (viewRow && viewAll && "IntersectionObserver" in window) {
+    const ctaObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) viewAll.classList.add("is-visible");
+          else if (entry.boundingClientRect.top > innerHeight)
+            viewAll.classList.remove("is-visible");
+        });
+      },
+      { threshold: 0.18, rootMargin: "0px 0px -8% 0px" },
+    );
+    ctaObserver.observe(viewRow);
+  } else viewAll?.classList.add("is-visible");
+  const menu = document.querySelector(".menu");
+  menu?.addEventListener("click", () => {
+    const nav = document.querySelector(".nav-links");
+    const open = nav.dataset.open === "1";
+    nav.dataset.open = open ? "0" : "1";
+    Object.assign(
+      nav.style,
+      open
+        ? { display: "" }
+        : {
+            display: "flex",
+            position: "absolute",
+            top: "56px",
+            left: "0",
+            right: "0",
+            padding: "18px",
+            background: "#13202d",
+            flexDirection: "column",
+            gap: "18px",
+          },
+    );
+  });
 });
 
 /* =======================================================
@@ -613,16 +690,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeButton = document.getElementById("showreelVideoClose");
 
   if (
-    track && stage && content && placeholder &&
-    imageLayer && image && shade && overlay
+    track &&
+    stage &&
+    content &&
+    placeholder &&
+    imageLayer &&
+    image &&
+    shade &&
+    overlay
   ) {
     let ticking = false;
 
-    const clamp = (value, min, max) =>
-      Math.min(Math.max(value, min), max);
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
-    const smooth = (t) =>
-      t * t * (3 - 2 * t);
+    const smooth = (t) => t * t * (3 - 2 * t);
 
     function updateShowreel() {
       ticking = false;
@@ -632,14 +713,10 @@ document.addEventListener("DOMContentLoaded", () => {
       // Scroll progress across the pinned Showreel section
       const scrollDistance = Math.max(
         track.offsetHeight - stage.offsetHeight,
-        1
+        1,
       );
 
-      const progress = clamp(
-        -trackRect.top / scrollDistance,
-        0,
-        1
-      );
+      const progress = clamp(-trackRect.top / scrollDistance, 0, 1);
 
       const stageRect = stage.getBoundingClientRect();
       const placeholderRect = placeholder.getBoundingClientRect();
@@ -652,38 +729,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Zoom completes early, then stays fullscreen
       const zoomEnd = 0.42;
-      const zoomProgress = smooth(
-        clamp(progress / zoomEnd, 0, 1)
-      );
+      const zoomProgress = smooth(clamp(progress / zoomEnd, 0, 1));
 
       const left = startLeft * (1 - zoomProgress);
       const top = startTop * (1 - zoomProgress);
 
       const width =
-        startWidth +
-        (stage.clientWidth - startWidth) * zoomProgress;
+        startWidth + (stage.clientWidth - startWidth) * zoomProgress;
 
       const height =
-        startHeight +
-        (stage.clientHeight - startHeight) * zoomProgress;
+        startHeight + (stage.clientHeight - startHeight) * zoomProgress;
 
       Object.assign(imageLayer.style, {
         left: `${left}px`,
         top: `${top}px`,
         width: `${width}px`,
         height: `${height}px`,
-        borderRadius: `${15 * (1 - zoomProgress)}px`
+        borderRadius: `${15 * (1 - zoomProgress)}px`,
       });
 
       // Fade out the original copyright row
-      content.style.opacity = String(
-        1 - smooth(clamp(progress / 0.14, 0, 1))
-      );
+      content.style.opacity = String(1 - smooth(clamp(progress / 0.14, 0, 1)));
 
       // Subtle darkening toward the next section
-      const darkProgress = smooth(
-        clamp((progress - 0.58) / 0.38, 0, 1)
-      );
+      const darkProgress = smooth(clamp((progress - 0.58) / 0.38, 0, 1));
 
       shade.style.opacity = String(darkProgress * 0.32);
 
@@ -703,7 +772,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.addEventListener("scroll", requestUpdate, {
-      passive: true
+      passive: true,
     });
 
     window.addEventListener("resize", requestUpdate);
@@ -712,9 +781,13 @@ document.addEventListener("DOMContentLoaded", () => {
       updateShowreel();
     } else {
       image.addEventListener("load", requestUpdate, { once: true });
-      image.addEventListener("error", () => {
-        console.error("Showreel image could not be loaded.");
-      }, { once: true });
+      image.addEventListener(
+        "error",
+        () => {
+          console.error("Showreel image could not be loaded.");
+        },
+        { once: true },
+      );
     }
   }
 
@@ -735,7 +808,7 @@ document.addEventListener("DOMContentLoaded", () => {
       promise.catch((error) => {
         console.warn(
           "Video could not autoplay. Press play in the video controls.",
-          error
+          error,
         );
       });
     }
@@ -762,10 +835,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Close with Escape key
   document.addEventListener("keydown", (event) => {
-    if (
-      event.key === "Escape" &&
-      videoModal?.classList.contains("is-open")
-    ) {
+    if (event.key === "Escape" && videoModal?.classList.contains("is-open")) {
       closeVideo();
     }
   });
@@ -777,14 +847,11 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   const projectsSection = document.querySelector("#projects");
   const heading = document.querySelector("#projects .projects-heading h2");
-  const projectCards = document.querySelectorAll(
-    "#projects .project-card"
-  );
+  const projectCards = document.querySelectorAll("#projects .project-card");
 
   if (!projectsSection || !heading) return;
 
-  const clamp = (value, min, max) =>
-    Math.min(Math.max(value, min), max);
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
   const easeOut = (t) => 1 - Math.pow(1 - t, 3);
 
@@ -802,16 +869,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const distance = rect.height + start - end;
 
-    const progress = clamp(
-      (start - rect.top) / Math.max(distance, 1),
-      0,
-      1
-    );
+    const progress = clamp((start - rect.top) / Math.max(distance, 1), 0, 1);
 
     // Zoom from small to normal size
-    const zoomProgress = easeOut(
-      clamp(progress / 0.45, 0, 1)
-    );
+    const zoomProgress = easeOut(clamp(progress / 0.45, 0, 1));
 
     const scale = 0.45 + (1 - 0.45) * zoomProgress;
 
@@ -826,7 +887,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.addEventListener("scroll", requestHeadingUpdate, {
-    passive: true
+    passive: true,
   });
 
   window.addEventListener("resize", requestHeadingUpdate);
@@ -845,8 +906,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           const index = [...projectCards].indexOf(entry.target);
 
-          entry.target.style.transitionDelay =
-            `${(index % 2) * 120}ms`;
+          entry.target.style.transitionDelay = `${(index % 2) * 120}ms`;
 
           entry.target.classList.add("is-revealed");
           observerInstance.unobserve(entry.target);
@@ -854,8 +914,8 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       {
         threshold: 0.12,
-        rootMargin: "0px 0px -40px 0px"
-      }
+        rootMargin: "0px 0px -40px 0px",
+      },
     );
 
     projectCards.forEach((card) => observer.observe(card));
@@ -865,7 +925,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
 
 /* =========================
    AWARDS SCROLL ANIMATION
@@ -892,8 +951,8 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       threshold: 0.15,
-      rootMargin: "0px 0px -35px 0px"
-    }
+      rootMargin: "0px 0px -35px 0px",
+    },
   );
 
   headingLines.forEach((line) => {
@@ -906,304 +965,235 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-
-
 /* =========================
    OUR TEAM SECTION
 ========================= */
 document.addEventListener("DOMContentLoaded", () => {
-  const cards = document.querySelectorAll(
-    ".team-section .team-stage .team-card"
+  const heading = document.querySelector(".team-heading");
+  const members = document.querySelectorAll(".team-grid .member");
+
+  // Respect accessibility preferences
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  // Show content immediately if animations are disabled
+  if (reduceMotion || !("IntersectionObserver" in window)) {
+    heading?.classList.add("is-visible");
+
+    members.forEach((member) => {
+      member.classList.add("is-visible");
+    });
+
+    return;
+  }
+
+  // Heading reveal
+  if (heading) {
+    const headingObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+      },
+    );
+
+    headingObserver.observe(heading);
+  }
+
+  // Staggered card reveal
+  const cardObserver = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const member = entry.target;
+          const index = Number(member.dataset.index || 0);
+
+          window.setTimeout(
+            () => {
+              member.classList.add("is-visible");
+            },
+            (index % 3) * 130,
+          );
+
+          observer.unobserve(member);
+        }
+      });
+    },
+    {
+      threshold: 0.12,
+      rootMargin: "0px 0px -25px 0px",
+    },
   );
 
-  cards.forEach((card) => {
-    // Clear any transforms left by the old scroll animation.
-    card.style.removeProperty("transform");
-    card.style.removeProperty("opacity");
+  members.forEach((member, index) => {
+    member.dataset.index = index;
+    cardObserver.observe(member);
+  });
 
-    card.setAttribute("tabindex", "0");
-
-    card.addEventListener("pointerenter", () => {
-      card.classList.add("is-hovered");
-    });
-
-    card.addEventListener("pointerleave", () => {
-      card.classList.remove("is-hovered");
-    });
-
-    card.addEventListener("focusin", () => {
-      card.classList.add("is-hovered");
-    });
-
-    card.addEventListener("focusout", (event) => {
-      if (!card.contains(event.relatedTarget)) {
-        card.classList.remove("is-hovered");
-      }
-    });
+  // Graceful handling of missing image paths
+  document.querySelectorAll(".team-grid .photo img").forEach((img) => {
+    img.addEventListener(
+      "error",
+      () => {
+        img.style.display = "none";
+        img.parentElement.style.background =
+          "linear-gradient(135deg, #deddd5, #aaa99f)";
+      },
+      { once: true },
+    );
   });
 });
 
 /* =========================
    TESTIMONIALS SECTION
 ========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const image = document.getElementById("testimonialImage");
+  const title = document.getElementById("testimonialTitle");
+  const name = document.getElementById("testimonialName");
+  const role = document.getElementById("testimonialRole");
+  const count = document.getElementById("testimonialCount");
+  const prev = document.getElementById("testimonialPrev");
+  const next = document.getElementById("testimonialNext");
 
-const testimonials = [
-
+  const testimonials = [
     {
-        title: "I'VE TRIED MANY SIMILAR PRODUCTS, BUT NOTHING COMPARES TO THIS ONE. THE QUALITY IS TOP-NOTCH, AND I'VE SEEN REAL, NOTICEABLE RESULTS!",
-
-        description: "We are a forward-thinking digital agency dedicated to helping brands grow, connect, and succeed in the online world. Since our beginning, we've combined creativity, strategy.",
-
-        name: "Andrew D. Smith",
-        role: "Researcher",
-
-        image: "assets/img/testi-1.jpg",
-
-        avatar: "assets/img/testi-1.jpg"
+      title:
+        "The team at VPromote Media really listens. They don’t just push templates, they came up with campaigns that felt tailored for our brand.",
+      name: "Ritika",
+      role: "Brand Manager",
+      image:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1000&q=85",
     },
-
     {
-        title: "WORKING WITH THIS TEAM HAS BEEN AN ABSOLUTE GAME CHANGER FOR OUR BUSINESS AND ONLINE PRESENCE!",
-
-        description: "Their creative approach, attention to detail, and strategic thinking helped us achieve incredible results. We couldn't be happier with the experience.",
-
-        name: "Jessica Miller",
-        role: "Marketing Director",
-
-        image: "assets/img/testi-2.jpg",
-
-        avatar: "assets/img/testi-2.jpg"
+      title:
+        "I run a small business and was worried digital marketing would be too expensive or complex. VPromote Media made it simple, affordable, and effective - I actually saw results in just a few weeks.",
+      name: "Arjun",
+      role: "Entrepreneur",
+      image:
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=85",
     },
-
     {
-        title: "EXCEPTIONAL SERVICE, INCREDIBLE CREATIVITY, AND A TEAM THAT TRULY UNDERSTANDS WHAT YOUR BRAND NEEDS!",
+      title:
+        "Whenever I’ve had last-minute requirements, VPromote Media has stepped up. Their flexibility and quick turnaround are something I rely on a lot.",
+      name: "Megha",
+      role: "Event Coordinator",
+      image:
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=85",
+    },
+    {
+      title:
+        "VPromote Media has been one of the easiest vendors to work with. They’re quick, professional, and always deliver on time. It saves me so much hassle knowing I can count on them.",
+      name: "Sakshi",
+      role: "Marketing Executive",
+      image:
+        "https://plus.unsplash.com/premium_photo-1661297414288-8ed17eb1b3f1?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
+    },
+    {
+      title:
+        "We needed design renders for our projects and the team understood exactly what we were looking for. The designs were creative and practical, which made our work so much easier.",
+      name: "Samir",
+      role: "Operations Manager",
+      image:
+        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1000&q=85",
+    },
+    {
+      title:
+        "I had no idea what SEO really meant before working with VPromote Media. They explained everything in simple terms and guided me step by step. Now our content actually ranks!",
+      name: "Saloni",
+      role: "Content Writer",
+      image:
+        "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1000&q=85",
+    },
+    {
+      title:
+        "It has been a privilege working with VPromote Media Digital Marketing Agency for the past four years. Your professionalism, creativity, and dedication have consistently impressed us at IndiaZakat.",
+      name: "Sania Nusrat",
+      role: "Communication Manager",
+      image:
+        "https://plus.unsplash.com/premium_photo-1675731938410-99ae5af70038?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
+    },
+    {
+      title:
+        "Working with Ashish and Swati have been a breeze. They are responsive, receptive to feedback, and always go the extra mile to ensure client satisfaction. Their expertise in digital marketing and design has been instrumental in enhancing our brand visibility and engagement. Thank you, Ashish and Swati, for your outstanding work and dedication!",
+      name: "Farhat Maniyar",
+      role: "Operations Manager",
+      image:
+        "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=1000&q=85",
+    },
+  ];
 
-        description: "From the initial consultation to the final delivery, every step was handled professionally. Their dedication and innovative ideas exceeded our expectations.",
+  let currentIndex = 0;
+  let isAnimating = false;
 
-        name: "Michael Johnson",
-        role: "Business Owner",
+  function updateContent(index) {
+    const item = testimonials[index];
 
-        image: "https://plus.unsplash.com/premium_photo-1661593195372-874ca9d29713?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
+    title.textContent = item.title;
+    name.textContent = item.name;
+    role.textContent = item.role;
 
-        avatar: "https://plus.unsplash.com/premium_photo-1661593195372-874ca9d29713?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D"
-    }
+    count.innerHTML =
+      `${String(index + 1).padStart(2, "0")} ` +
+      `<span>/ ${String(testimonials.length).padStart(2, "0")}</span>`;
+  }
 
-];
-
-
-/* =========================================
-   ELEMENTS
-========================================= */
-
-const testimonialSlide =
-    document.getElementById("testimonialSlide");
-
-const testimonialImage =
-    document.getElementById("testimonialImage");
-
-const testimonialTitle =
-    document.getElementById("testimonialTitle");
-
-const testimonialDesc =
-    document.getElementById("testimonialDesc");
-
-const authorImage =
-    document.getElementById("authorImage");
-
-const authorName =
-    document.getElementById("authorName");
-
-const authorRole =
-    document.getElementById("authorRole");
-
-const nextButton =
-    document.getElementById("nextTestimonial");
-
-const prevButton =
-    document.getElementById("prevTestimonial");
-
-
-/* =========================================
-   SETTINGS
-========================================= */
-
-let currentIndex = 0;
-let isAnimating = false;
-let autoSlide = null;
-
-/* Change testimonial every 6 seconds */
-const slideInterval = 5000;
-
-/* Fade-out duration */
-const exitDuration = 400;
-
-/* Content entrance animation duration */
-const entranceDuration = 1100;
-
-
-/* =========================================
-   PRELOAD IMAGES
-========================================= */
-
-testimonials.forEach((item) => {
-
-    const mainImg = new Image();
-    mainImg.src = item.image;
-
-    const profileImg = new Image();
-    profileImg.src = item.avatar;
-
-});
-
-
-/* =========================================
-   CHANGE TESTIMONIAL
-========================================= */
-
-function changeTestimonial(index) {
-
-    if (isAnimating) return;
+  function showTestimonial(index) {
+    if (isAnimating || index === currentIndex) return;
 
     isAnimating = true;
 
-    /* Remove previous entrance state */
-    testimonialSlide.classList.remove("fade-in");
+    const item = testimonials[index];
+    const newImage = new Image();
 
-    /* Start smooth exit */
-    testimonialSlide.classList.add("fade-out");
+    image.classList.add("is-changing");
 
-    setTimeout(() => {
+    function finishTransition(useNewImage) {
+      if (useNewImage) {
+        image.src = item.image;
+        image.alt = `Portrait of ${item.name}`;
+      }
 
-        /* Calculate next slide */
-        currentIndex =
-            (index + testimonials.length) % testimonials.length;
+      currentIndex = index;
+      updateContent(index);
 
-        const data = testimonials[currentIndex];
-
-        /* Update text content */
-        testimonialTitle.textContent = data.title;
-
-        testimonialDesc.textContent = data.description;
-
-        authorName.textContent = data.name;
-
-        authorRole.textContent = data.role;
-
-        /* Update images */
-        testimonialImage.src = data.image;
-
-        authorImage.src = data.avatar;
-
-        /* Remove exit animation */
-        testimonialSlide.classList.remove("fade-out");
-
-        /* Restart CSS animations */
-        void testimonialSlide.offsetWidth;
-
-        /* Start smooth entrance */
-        testimonialSlide.classList.add("fade-in");
-
-        /* Allow interaction after animation */
-        setTimeout(() => {
-
-            testimonialSlide.classList.remove("fade-in");
-
-            isAnimating = false;
-
-        }, entranceDuration);
-
-    }, exitDuration);
-
-}
-
-
-/* =========================================
-   NEXT BUTTON
-========================================= */
-
-nextButton.addEventListener("click", () => {
-
-    if (isAnimating) return;
-
-    changeTestimonial(currentIndex + 1);
-
-    resetAutoSlide();
-
-});
-
-
-/* =========================================
-   PREVIOUS BUTTON
-========================================= */
-
-prevButton.addEventListener("click", () => {
-
-    if (isAnimating) return;
-
-    changeTestimonial(currentIndex - 1);
-
-    resetAutoSlide();
-
-});
-
-
-/* =========================================
-   AUTO SLIDER
-========================================= */
-
-function startAutoSlide() {
-
-    clearInterval(autoSlide);
-
-    autoSlide = setInterval(() => {
-
-        if (!isAnimating) {
-
-            changeTestimonial(currentIndex + 1);
-
-        }
-
-    }, slideInterval);
-
-}
-
-
-/* =========================================
-   RESET AUTO SLIDER
-========================================= */
-
-function resetAutoSlide() {
-
-    startAutoSlide();
-
-}
-
-
-/* =========================================
-   PAUSE WHEN TAB IS HIDDEN
-========================================= */
-
-document.addEventListener("visibilitychange", () => {
-
-    if (document.hidden) {
-
-        clearInterval(autoSlide);
-
-    } else {
-
-        startAutoSlide();
-
+      requestAnimationFrame(() => {
+        image.classList.remove("is-changing");
+        isAnimating = false;
+      });
     }
 
+    newImage.onload = () => finishTransition(true);
+    newImage.onerror = () => finishTransition(false);
+    newImage.src = item.image;
+
+    // If the browser has already loaded this image, onload
+    // will still run; no additional timer is needed.
+  }
+
+  next.addEventListener("click", () => {
+    const nextIndex = (currentIndex + 1) % testimonials.length;
+    showTestimonial(nextIndex);
+  });
+
+  prev.addEventListener("click", () => {
+    const prevIndex =
+      (currentIndex - 1 + testimonials.length) % testimonials.length;
+
+    showTestimonial(prevIndex);
+  });
+
+  // Initialise the first testimonial.
+  updateContent(currentIndex);
+  image.alt = `Portrait of ${testimonials[0].name}`;
 });
-
-
-/* =========================================
-   START SLIDER
-========================================= */
-
-startAutoSlide();
-
 
 /* =========================================
    BLOGS SECTION
