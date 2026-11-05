@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+    <title>VPromote Media | Terms of Use</title>
+
+    <link rel="stylesheet" href="assets/css/style.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <style>
+      .privacy-page {
+        width: 100%;
+        min-height: 100vh;
+        background:
+          radial-gradient(
+            ellipse at 50% 20%,
+            rgba(255, 255, 255, 0.025),
+            transparent 50%
+          ),
+          #080808;
+      }
+
+      .privacy-hero {
+        position: relative;
+        width: 100%;
+        height: 510px;
+        min-height: 400px;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+        isolation: isolate;
+      }
+
+      .hero-image {
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        background-image: url("assets/img/terms.jpeg");
+        background-size: cover;
+        background-position: center 48%;
+        transform: scale(1.02);
+        filter: grayscale(100%) brightness(0.48);
+      }
+
+      .hero-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.15) 0%,
+            rgba(0, 0, 0, 0.3) 35%,
+            rgba(0, 0, 0, 0.85) 75%,
+            #080808 100%
+          ),
+          linear-gradient(90deg, rgba(0, 0, 0, 0.45), transparent 80%);
+      }
+
+      .hero-content {
+        position: relative;
+        width: min(var(--container), calc(100% - 80px));
+        margin: 0 auto;
+        padding-bottom: 75px;
+      }
+
+      .hero-eyebrow {
+        display: inline-block;
+        margin-bottom: 18px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 3px;
+        color: var(--secondary);
+        opacity: 0.9;
+      }
+
+      .hero-content h1 {
+        font-family: "Manrope", sans-serif;
+        font-size: clamp(42px, 6vw, 76px);
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: -3px;
+        color: #fff;
+      }
+
+      .hero-content h1 span {
+        display: block;
+
+        font-family: Georgia, serif;
+        font-style: italic;
+        font-weight: 400;
+
+        color: var(--secondary);
+        letter-spacing: -2px;
+      }
+
+      .hero-content p {
+        max-width: 420px;
+        margin-top: 22px;
+
+        font-size: 14px;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .hero-bottom-line {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+
+        width: min(var(--container), calc(100% - 80px));
+        height: 1px;
+
+        transform: translateX(-50%);
+        background: var(--border);
+      }
+
+      .privacy-container {
+        width: min(var(--container), calc(100% - 80px));
+        margin: 0 auto;
+        padding: 75px 100px;
+        background: #080808;
+      }
+
+      .privacy-intro {
+        max-width: 760px;
+      }
+
+      .intro-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        margin-bottom: 22px;
+
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 2px;
+
+        color: var(--secondary);
+      }
+
+      .label-dot {
+        width: 6px;
+        height: 6px;
+
+        border-radius: 50%;
+        background: var(--secondary);
+
+        box-shadow: 0 0 12px var(--secondary);
+      }
+
+      .privacy-intro h2 {
+        font-family: "Manrope", sans-serif;
+        font-size: clamp(32px, 4vw, 48px);
+        font-weight: 700;
+
+        letter-spacing: -1.8px;
+        line-height: 1.2;
+
+        margin-bottom: 18px;
+      }
+
+      .updated-date {
+        font-size: 12px;
+        color: #777;
+        margin-bottom: 24px;
+      }
+
+      .updated-date span {
+        color: #aaa;
+      }
+
+      .intro-description {
+        max-width: 680px;
+
+        font-size: 14px;
+        line-height: 1.95;
+
+        color: var(--text-muted);
+      }
+
+      .section-divider {
+        width: 100%;
+        height: 1px;
+
+        margin: 45px 0;
+
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.12),
+          rgba(255, 255, 255, 0.035)
+        );
+      }
+
+      .policy-section {
+        display: grid;
+        grid-template-columns: 75px minmax(0, 1fr);
+        gap: 25px;
+
+        align-items: start;
+      }
+
+      .section-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 48px;
+        height: 48px;
+
+        border: 1px solid rgba(199, 243, 107, 0.2);
+        border-radius: 50%;
+
+        color: var(--accent);
+
+        font-family: "Manrope", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+
+        background: rgba(199, 243, 107, 0.035);
+      }
+
+      .section-content h3 {
+        font-family: "Manrope", sans-serif;
+        font-size: clamp(20px, 2.5vw, 25px);
+        font-weight: 600;
+
+        letter-spacing: -0.6px;
+        line-height: 1.4;
+
+        margin-bottom: 18px;
+      }
+
+      .section-content p {
+        max-width: 760px;
+
+        font-size: 14px;
+        line-height: 1.95;
+
+        color: var(--text-muted);
+
+        margin-bottom: 15px;
+      }
+
+      .section-content p:last-child {
+        margin-bottom: 0;
+      }
+
+      .section-content ul {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin: 22px 0 10px;
+        padding: 0;
+        list-style: disc;
+      }
+
+      .section-content li {
+        position: relative;
+
+        padding-left: 20px;
+
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .section-content li::before {
+        content: "";
+
+        position: absolute;
+        left: 0;
+        top: 9px;
+
+        width: 5px;
+        height: 5px;
+
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      .privacy-contact {
+        position: relative;
+
+        display: flex;
+        align-items: flex-start;
+        gap: 25px;
+
+        padding: 40px;
+
+        border: 1px solid rgba(199, 243, 107, 0.15);
+        border-radius: 18px;
+
+        background:
+          radial-gradient(
+            ellipse at 0% 0%,
+            rgba(199, 243, 107, 0.06),
+            transparent 60%
+          ),
+          #0c0c0c;
+
+        overflow: hidden;
+      }
+
+      .contact-icon {
+        flex-shrink: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 48px;
+        height: 48px;
+
+        border-radius: 50%;
+
+        color: var(--accent);
+        font-size: 24px;
+
+        border: 1px solid rgba(199, 243, 107, 0.2);
+        background: rgba(199, 243, 107, 0.05);
+      }
+
+      .contact-eyebrow {
+        display: block;
+
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 2px;
+
+        color: var(--accent);
+
+        margin-bottom: 14px;
+      }
+
+      .contact-content h3 {
+        font-family: "Manrope", sans-serif;
+        font-size: clamp(22px, 3vw, 32px);
+        font-weight: 600;
+
+        letter-spacing: -1px;
+        line-height: 1.3;
+
+        margin-bottom: 15px;
+      }
+
+      .contact-content p {
+        max-width: 550px;
+
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.8;
+
+        margin-bottom: 22px;
+      }
+
+      .contact-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        color: var(--accent);
+
+        transition: gap 0.3s ease;
+      }
+
+      .contact-link:hover {
+        gap: 18px;
+      }
+
+      .contact-link span {
+        font-size: 18px;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(25px);
+
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+      }
+
+      .reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (max-width: 768px) {
+        main{
+          background: #090909;
+        }
+        
+        .privacy-hero {
+          height: 430px;
+          min-height: 360px;
+        }
+
+        .hero-content {
+          width: calc(100% - 48px);
+          padding-bottom: 60px;
+        }
+
+        .hero-content h1 {
+          font-size: clamp(38px, 8vw, 58px);
+          letter-spacing: -2px;
+        }
+
+        .hero-content h1 span {
+          letter-spacing: -1.5px;
+        }
+
+        .hero-content p {
+          font-size: 13px;
+          max-width: 360px;
+        }
+
+        .hero-bottom-line {
+          width: calc(100% - 48px);
+        }
+
+        .privacy-container {
+          width: calc(100% - 48px);
+          padding: 55px 0 70px;
+        }
+
+        .section-divider {
+          margin: 35px 0;
+        }
+
+        .policy-section {
+          grid-template-columns: 55px minmax(0, 1fr);
+          gap: 18px;
+        }
+
+        .section-number {
+          width: 42px;
+          height: 42px;
+          font-size: 12px;
+        }
+
+        .privacy-contact {
+          padding: 30px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .privacy-hero {
+          height: 390px;
+          min-height: 340px;
+        }
+
+        .hero-image {
+          background-position: center;
+        }
+
+        .hero-content {
+          width: calc(100% - 36px);
+          padding-bottom: 48px;
+        }
+
+        .hero-eyebrow {
+          font-size: 9px;
+          letter-spacing: 2px;
+          margin-bottom: 15px;
+        }
+
+        .hero-content h1 {
+          font-size: 39px;
+          line-height: 1.12;
+          letter-spacing: -1.8px;
+        }
+
+        .hero-content h1 span {
+          font-size: 35px;
+          letter-spacing: -1px;
+        }
+
+        .hero-content p {
+          font-size: 12px;
+          line-height: 1.8;
+          max-width: 290px;
+          margin-top: 17px;
+        }
+
+        .hero-bottom-line {
+          width: calc(100% - 36px);
+        }
+
+        .privacy-container {
+          width: calc(100% - 36px);
+          padding: 45px 0 55px;
+        }
+
+        .intro-label {
+          font-size: 9px;
+          letter-spacing: 1.5px;
+          margin-bottom: 18px;
+        }
+
+        .privacy-intro h2 {
+          font-size: 32px;
+          letter-spacing: -1px;
+          margin-bottom: 15px;
+        }
+
+        .updated-date {
+          font-size: 11px;
+          margin-bottom: 20px;
+        }
+
+        .intro-description {
+          font-size: 12px;
+          line-height: 1.9;
+        }
+
+        .section-divider {
+          margin: 30px 0;
+        }
+
+        .policy-section {
+          grid-template-columns: 1fr;
+          gap: 18px;
+        }
+
+        .section-number {
+          width: 38px;
+          height: 38px;
+          font-size: 11px;
+        }
+
+        .section-content h3 {
+          font-size: 21px;
+          margin-bottom: 14px;
+        }
+
+        .section-content p {
+          font-size: 12px;
+          line-height: 1.9;
+          margin-bottom: 13px;
+        }
+
+        .section-content li {
+          font-size: 12px;
+        }
+
+        .section-content ul {
+          gap: 10px;
+          margin: 18px 0;
+        }
+
+        .privacy-contact {
+          flex-direction: column;
+          gap: 20px;
+          padding: 25px 22px;
+          border-radius: 14px;
+        }
+
+        .contact-icon {
+          width: 42px;
+          height: 42px;
+          font-size: 21px;
+        }
+
+        .contact-content h3 {
+          font-size: 24px;
+          letter-spacing: -0.7px;
+        }
+
+        .contact-content p {
+          font-size: 12px;
+          line-height: 1.8;
+        }
+
+        .contact-link {
+          font-size: 12px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+
+        .reveal {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <div id="navbar"></div>
+
+    <main>
+      <!-- HERO SECTION -->
+      <section class="privacy-hero">
+        <div class="hero-image"></div>
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+          <span class="hero-eyebrow"> VPROMOTE MEDIA </span>
+
+          <h1>
+            Your Access
+            <span>Our Terms</span>
+          </h1>
+
+          <p>
+            Clear expectations. Trusted relationships. A better experience for
+            everyone.
+          </p>
+        </div>
+
+        <div class="hero-bottom-line"></div>
+      </section>
+
+      <!-- MAIN CONTENT -->
+      <div class="privacy-container">
+        <!-- INTRO -->
+        <section class="privacy-intro reveal">
+          <div class="intro-label">
+            <span class="label-dot"></span>
+            TERMS & CONDITIONS
+          </div>
+
+          <h2>Terms of Use</h2>
+
+          <p class="updated-date">
+            Last Updated:
+            <span>October 15, 2026</span>
+          </p>
+
+          <p class="intro-description">
+            Welcome to VPromote Media! By using our website, services, or interacting with our content, you agree to follow these Terms of Use. Please read them carefully.
+          </p>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- SECTION 01 -->
+        <section class="policy-section reveal">
+          <div class="section-number">01</div>
+
+          <div class="section-content">
+            <h3>Use of Our Services</h3>
+
+            <p>
+              You agree to use our services only for lawful purposes and in a way that does not infringe on the rights of others. No spamming, hacking, or pretending to be someone else we like to keep things honest and clean.
+            </p>
+
+          </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- SECTION 02 -->
+        <section class="policy-section reveal">
+          <div class="section-number">02</div>
+
+          <div class="section-content">
+            <h3>Intellectual Property</h3>
+
+            <p>
+              All content on this site (like logos, graphics, and text) belongs to VPromote Media unless stated otherwise. Don’t copy, reuse, or modify our stuff without written permission. We work hard on our content respect the hustle!
+            </p>
+
+          </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- SECTION 03 -->
+        <section class="policy-section reveal">
+          <div class="section-number">03</div>
+
+          <div class="section-content">
+            <h3>Payments & Refunds</h3>
+
+            <p>
+              For paid services, all terms will be clearly mentioned in our contracts or proposals. Refunds (if any) are handled on a case-by-case basis, based on service status and deliverables.
+            </p>
+
+          </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- SECTION 04 -->
+        <section class="policy-section reveal">
+          <div class="section-number">04</div>
+
+          <div class="section-content">
+            <h3>Limitation of Liability</h3>
+
+            <p>
+              We do our best to keep things smooth, but we can’t promise the site will always be error-free or uninterrupted. V‑promote is not liable for any losses or damages resulting from using our site or services.
+            </p>
+
+          </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- CONTACT SECTION -->
+        <section class="privacy-contact reveal">
+          <div class="contact-icon">
+            <span>✳</span>
+          </div>
+
+          <div class="contact-content">
+            <span class="contact-eyebrow"> NEED CLARIFICATION? </span>
+
+            <h3>Changes to Terms</h3>
+
+            <p>
+              We may update these Terms from time to time. By continuing to use our site, you’re agreeing to any changes. Don’t worry, we’ll always keep it fair.
+            </p>
+
+            <p>If you have any questions, feel free to contact us at</p>
+
+            <a href="mailto:marketing@vpromote.org" class="contact-link">
+              marketing@vpromote.org
+              <span>↗</span>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <!-- =========================
+     FLOATING WHATSAPP BUTTON
+    ========================= -->
+    <a
+      href="https://wa.me/919988981186"
+      class="whatsapp-float"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Chat with us on WhatsApp"
+      title="Chat with us on WhatsApp"
+    >
+      <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- =========================
+     SCROLL TO TOP BUTTON
+    ========================= -->
+
+    <button
+      type="button"
+      id="scrollToTop"
+      class="scroll-top"
+      aria-label="Scroll to top"
+      title="Back to top"
+    >
+      ↑
+    </button>
+
+    <script src="assets/js/main.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const revealElements = document.querySelectorAll(".reveal");
+
+        const revealObserver = new IntersectionObserver(
+          (entries, observer) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          {
+            threshold: 0.12,
+            rootMargin: "0px 0px -30px 0px",
+          },
+        );
+
+        revealElements.forEach((element) => {
+          revealObserver.observe(element);
+        });
+
+        // Accessibility: reduced motion
+        const prefersReducedMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        );
+
+        if (prefersReducedMotion.matches) {
+          revealElements.forEach((element) => {
+            element.classList.add("is-visible");
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

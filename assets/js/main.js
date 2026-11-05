@@ -145,77 +145,25 @@ function initializeNavbar() {
   });
 }
 
-/*
-    ========================================
+/*========================================
     Image Zoom Section
-    ========================================
-    */
-
+========================================*/
 document.addEventListener("DOMContentLoaded", () => {
   const section = document.getElementById("videoZoomSection");
 
+  if (!section) return;
+
   const stage = section.querySelector(".video-zoom-stage");
-
   const box = section.querySelector(".video-zoom-image");
+  const image = box?.querySelector("img");
 
-  const image = box.querySelector("img");
+  if (!stage || !box || !image) return;
 
-  if (!section || !stage || !box || !image) {
-    return;
-  }
-
-  /* =====================================================
-       SETTINGS
-    ===================================================== */
-
-  /*
-       Apne actual fixed header ki height yahan do.
-
-       Agar header 80px hai:
-       80
-
-       Agar 70px hai:
-       70
-    */
+  /* =========================================
+     SETTINGS
+  ========================================= */
 
   const HEADER_HEIGHT = 80;
-
-  /*
-       Starting image position
-    */
-
-  const START_TOP = 20;
-
-  /*
-       Starting width
-
-       RIGHT SIDE 0
-    */
-
-  const START_WIDTH = 80;
-
-  /*
-       Normal image height
-    */
-
-  const NORMAL_HEIGHT = 270;
-
-  /*
-       Header touch ke time
-       image ki compressed height
-    */
-
-  const COMPRESSED_HEIGHT = 82;
-
-  /*
-       Final height
-    */
-
-  const FINAL_HEIGHT = 600;
-
-  /*
-       Animation phases
-    */
 
   const PHASE_1 = 0.34;
   const PHASE_2 = 0.55;
@@ -225,9 +173,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let raf = null;
 
-  /* =====================================================
-       HELPERS
-    ===================================================== */
+  /* =========================================
+     RESPONSIVE SETTINGS
+  ========================================= */
+
+  function getSettings() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    const isMobile = width <= 768;
+    const isSmallMobile = width <= 480;
+
+    const startTop = isSmallMobile ? 20 : isMobile ? 20 : 20;
+
+    const startWidth = isSmallMobile
+      ? 96
+      : isMobile
+        ? 94
+        : width <= 1024
+          ? 88
+          : 80;
+
+    const normalHeight = isSmallMobile
+      ? Math.min(220, height * 0.32)
+      : isMobile
+        ? Math.min(250, height * 0.35)
+        : 270;
+
+    /*
+      Header ke neeche available
+      complete screen height.
+    */
+
+    const finalHeight = Math.max(200, height - HEADER_HEIGHT);
+
+    /*
+      Responsive compressed height.
+    */
+
+    const compressedHeight = Math.min(82, finalHeight * 0.18);
+
+    return {
+      startTop,
+      startWidth,
+      normalHeight,
+      finalHeight,
+      compressedHeight,
+    };
+  }
+
+  /* =========================================
+     HELPERS
+  ========================================= */
 
   function clamp(value, min, max) {
     return Math.min(Math.max(value, min), max);
@@ -237,89 +234,63 @@ document.addEventListener("DOMContentLoaded", () => {
     return a + (b - a) * t;
   }
 
-  /*
-       Smooth cubic easing
-    */
-
   function ease(t) {
     return t * t * (3 - 2 * t);
   }
 
-  /* =====================================================
-       GET SCROLL PROGRESS
-    ===================================================== */
+  /* =========================================
+     SCROLL PROGRESS
+  ========================================= */
 
   function getProgress() {
     const rect = section.getBoundingClientRect();
 
-    const scrollDistance = section.offsetHeight - window.innerHeight;
+    const scrollDistance = section.offsetHeight - stage.offsetHeight;
+
+    if (scrollDistance <= 0) return 0;
 
     return clamp(-rect.top / scrollDistance, 0, 1);
   }
 
-  /* =====================================================
-       ANIMATION
-    ===================================================== */
+  /* =========================================
+     ANIMATION
+  ========================================= */
 
   function render() {
-    /*
-           Smooth interpolation
-        */
-
     current += (target - current) * 0.09;
 
     const p = clamp(current, 0, 1);
 
-    /* =================================================
-           PHASE 1
+    const settings = getSettings();
 
-           Image moves upward.
+    const {
+      startTop,
+      startWidth,
+      normalHeight,
+      finalHeight,
+      compressedHeight,
+    } = settings;
 
-           RIGHT SIDE remains 0.
-
-           Left gap gradually reduces.
-
-           Image zooms.
-        ================================================= */
+    /* =====================================
+       PHASE 1
+       IMAGE MOVES UPWARD
+    ===================================== */
 
     if (p < PHASE_1) {
       let t = p / PHASE_1;
 
       t = ease(t);
 
-      /*
-              TOP
+      const top = lerp(startTop, HEADER_HEIGHT, t);
 
-              250 → header
-            */
+      const width = lerp(startWidth, 94, t);
 
-      const top = lerp(START_TOP, HEADER_HEIGHT, t);
-
-      /*
-              WIDTH
-
-              90 → 94
-
-              Still right aligned.
-            */
-
-      const width = lerp(START_WIDTH, 94, t);
-
-      /*
-              Height remains normal
-            */
-
-      const height = lerp(NORMAL_HEIGHT, NORMAL_HEIGHT, t);
-
-      /*
-              Rounded → less rounded
-            */
+      const height = normalHeight;
 
       const radius = lerp(16, 10, t);
 
-      box.style.right = "0px";
-
       box.style.left = "auto";
+      box.style.right = "0";
 
       box.style.top = `${top}px`;
 
@@ -329,135 +300,80 @@ document.addEventListener("DOMContentLoaded", () => {
 
       box.style.borderRadius = `${radius}px 0 0 ${radius}px`;
 
-      /*
-              IMAGE ZOOM
-
-              Slow zoom while travelling upward
-            */
-
       image.style.transform = `scale(${lerp(1, 1.12, t)})`;
     } else if (p < PHASE_2) {
-      /* =================================================
-           PHASE 2
 
-           HEADER TOUCH
-
-           THIS IS THE SPECIAL CHANGE.
-
-           Image rapidly becomes:
-           100% width
-
-           Height compresses.
-        ================================================= */
+    /* =====================================
+       PHASE 2
+       IMAGE EXPANDS TO FULL WIDTH
+    ===================================== */
       let t = (p - PHASE_1) / (PHASE_2 - PHASE_1);
 
       t = ease(t);
 
-      /*
-              RIGHT = 0
-            */
-
-      box.style.right = "0px";
-
-      /*
-              Width expands LEFTWARD
-
-              94 → 100
-            */
-
       const width = lerp(94, 100, t);
 
-      box.style.width = `${width}%`;
+      const height = lerp(normalHeight, compressedHeight, t);
 
-      /*
-              TOP LOCKED TO HEADER
-            */
+      box.style.left = "auto";
+      box.style.right = "0";
 
       box.style.top = `${HEADER_HEIGHT}px`;
 
-      /*
-              THIS IS THE IMPORTANT EFFECT
-
-              270 → 82
-            */
-
-      const height = lerp(NORMAL_HEIGHT, COMPRESSED_HEIGHT, t);
+      box.style.width = `${width}%`;
 
       box.style.height = `${height}px`;
 
-      /*
-              Corners disappear
-            */
-
       box.style.borderRadius = "0px";
-
-      /*
-              Image zoom increases
-            */
 
       image.style.transform = `scale(${lerp(1.12, 1.2, t)})`;
     } else {
-      /* =================================================
-           PHASE 3
 
-           Image is now FULL WIDTH.
-
-           Top remains attached to header.
-
-           Height slowly grows again.
-
-           This is the second zoom animation.
-        ================================================= */
+    /* =====================================
+       PHASE 3
+       IMAGE TAKES COMPLETE AVAILABLE HEIGHT
+    ===================================== */
       let t = (p - PHASE_2) / (1 - PHASE_2);
 
       t = ease(t);
 
       /*
-              EXACT FULL WIDTH
-            */
+        FULL WIDTH
+      */
 
-      box.style.left = "0px";
-
-      box.style.right = "0px";
+      box.style.left = "0";
+      box.style.right = "0";
 
       box.style.width = "100%";
 
       /*
-              TOP NEVER MOVES
-
-              It remains attached to header.
-            */
+        HEADER KE JUST NEEche
+      */
 
       box.style.top = `${HEADER_HEIGHT}px`;
 
       /*
-              HEIGHT
+        COMPLETE AVAILABLE HEIGHT
 
-              compressed → full image
-            */
+        82px -> window.innerHeight - header
+      */
 
-      const height = lerp(COMPRESSED_HEIGHT, FINAL_HEIGHT, t);
+      const height = lerp(compressedHeight, finalHeight, t);
 
       box.style.height = `${height}px`;
-
-      /*
-              Completely square
-            */
 
       box.style.borderRadius = "0px";
 
       /*
-              SECOND ZOOM
-
-              Image itself continues zooming.
-            */
+        SECOND ZOOM
+      */
 
       image.style.transform = `scale(${lerp(1.2, 1.32, t)})`;
     }
 
-    /* =================================================
-           LOOP
-        ================================================= */
+    /* =====================================
+       CONTINUE ANIMATION
+    ===================================== */
 
     if (Math.abs(target - current) > 0.00005) {
       raf = requestAnimationFrame(render);
@@ -466,9 +382,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* =====================================================
-       SCROLL
-    ===================================================== */
+  /* =========================================
+     SCROLL
+  ========================================= */
 
   function onScroll() {
     target = getProgress();
@@ -478,13 +394,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  window.addEventListener("scroll", onScroll, {
-    passive: true,
-  });
+  window.addEventListener("scroll", onScroll, { passive: true });
 
-  /* =====================================================
-       RESIZE
-    ===================================================== */
+  /* =========================================
+     RESIZE
+  ========================================= */
 
   window.addEventListener("resize", () => {
     target = getProgress();
@@ -494,9 +408,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* =====================================================
-       INITIAL
-    ===================================================== */
+  /* =========================================
+     INITIAL
+  ========================================= */
 
   target = getProgress();
 
@@ -1054,145 +968,251 @@ document.addEventListener("DOMContentLoaded", () => {
 /* =========================
    TESTIMONIALS SECTION
 ========================= */
+
+/* =========================================
+   TESTIMONIAL SECTION
+   Automatic Slider + Navigation
+========================================= */
+
 document.addEventListener("DOMContentLoaded", () => {
-  const image = document.getElementById("testimonialImage");
   const title = document.getElementById("testimonialTitle");
   const name = document.getElementById("testimonialName");
   const role = document.getElementById("testimonialRole");
   const count = document.getElementById("testimonialCount");
+
   const prev = document.getElementById("testimonialPrev");
   const next = document.getElementById("testimonialNext");
+
+  const glassCard = document.querySelector(".testimonial-glass-card");
+
+  const testimonialSection = document.querySelector(".testimonial-section");
+
+  if (!title || !name || !role || !count || !prev || !next || !glassCard) {
+    return;
+  }
+
+  /* =====================================
+     TESTIMONIAL DATA
+  ===================================== */
 
   const testimonials = [
     {
       title:
         "The team at VPromote Media really listens. They don’t just push templates, they came up with campaigns that felt tailored for our brand.",
+
       name: "Ritika",
+
       role: "Brand Manager",
-      image:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1000&q=85",
     },
+
     {
       title:
         "I run a small business and was worried digital marketing would be too expensive or complex. VPromote Media made it simple, affordable, and effective - I actually saw results in just a few weeks.",
+
       name: "Arjun",
+
       role: "Entrepreneur",
-      image:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1000&q=85",
     },
+
     {
       title:
         "Whenever I’ve had last-minute requirements, VPromote Media has stepped up. Their flexibility and quick turnaround are something I rely on a lot.",
+
       name: "Megha",
+
       role: "Event Coordinator",
-      image:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=85",
     },
+
     {
       title:
         "VPromote Media has been one of the easiest vendors to work with. They’re quick, professional, and always deliver on time. It saves me so much hassle knowing I can count on them.",
+
       name: "Sakshi",
+
       role: "Marketing Executive",
-      image:
-        "https://plus.unsplash.com/premium_photo-1661297414288-8ed17eb1b3f1?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
     },
+
     {
       title:
         "We needed design renders for our projects and the team understood exactly what we were looking for. The designs were creative and practical, which made our work so much easier.",
+
       name: "Samir",
+
       role: "Operations Manager",
-      image:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1000&q=85",
     },
+
     {
       title:
         "I had no idea what SEO really meant before working with VPromote Media. They explained everything in simple terms and guided me step by step. Now our content actually ranks!",
+
       name: "Saloni",
+
       role: "Content Writer",
-      image:
-        "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1000&q=85",
     },
+
     {
       title:
         "It has been a privilege working with VPromote Media Digital Marketing Agency for the past four years. Your professionalism, creativity, and dedication have consistently impressed us at IndiaZakat.",
+
       name: "Sania Nusrat",
+
       role: "Communication Manager",
-      image:
-        "https://plus.unsplash.com/premium_photo-1675731938410-99ae5af70038?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
     },
+
     {
       title:
         "Working with Ashish and Swati have been a breeze. They are responsive, receptive to feedback, and always go the extra mile to ensure client satisfaction. Their expertise in digital marketing and design has been instrumental in enhancing our brand visibility and engagement. Thank you, Ashish and Swati, for your outstanding work and dedication!",
+
       name: "Farhat Maniyar",
+
       role: "Operations Manager",
-      image:
-        "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=1000&q=85",
     },
   ];
 
+  /* =====================================
+     SLIDER SETTINGS
+  ===================================== */
+
   let currentIndex = 0;
+
+  let autoSlide = null;
+
   let isAnimating = false;
+
+  const slideDuration = 5000;
+
+  /* =====================================
+     UPDATE TESTIMONIAL CONTENT
+  ===================================== */
 
   function updateContent(index) {
     const item = testimonials[index];
 
     title.textContent = item.title;
+
     name.textContent = item.name;
+
     role.textContent = item.role;
 
-    count.innerHTML =
-      `${String(index + 1).padStart(2, "0")} ` +
-      `<span>/ ${String(testimonials.length).padStart(2, "0")}</span>`;
+    count.textContent =
+      `${String(index + 1).padStart(2, "0")} / ` +
+      `${String(testimonials.length).padStart(2, "0")}`;
   }
 
+  /* =====================================
+     SHOW TESTIMONIAL
+  ===================================== */
+
   function showTestimonial(index) {
-    if (isAnimating || index === currentIndex) return;
+    if (isAnimating || index === currentIndex) {
+      return;
+    }
 
     isAnimating = true;
 
-    const item = testimonials[index];
-    const newImage = new Image();
+    glassCard.classList.add("is-changing");
 
-    image.classList.add("is-changing");
-
-    function finishTransition(useNewImage) {
-      if (useNewImage) {
-        image.src = item.image;
-        image.alt = `Portrait of ${item.name}`;
-      }
-
+    setTimeout(() => {
       currentIndex = index;
-      updateContent(index);
 
-      requestAnimationFrame(() => {
-        image.classList.remove("is-changing");
-        isAnimating = false;
-      });
-    }
+      updateContent(currentIndex);
 
-    newImage.onload = () => finishTransition(true);
-    newImage.onerror = () => finishTransition(false);
-    newImage.src = item.image;
+      glassCard.classList.remove("is-changing");
 
-    // If the browser has already loaded this image, onload
-    // will still run; no additional timer is needed.
+      isAnimating = false;
+    }, 250);
   }
 
-  next.addEventListener("click", () => {
-    const nextIndex = (currentIndex + 1) % testimonials.length;
-    showTestimonial(nextIndex);
-  });
+  /* =====================================
+     NEXT TESTIMONIAL
+  ===================================== */
 
-  prev.addEventListener("click", () => {
+  function nextTestimonial() {
+    const nextIndex = (currentIndex + 1) % testimonials.length;
+
+    showTestimonial(nextIndex);
+  }
+
+  /* =====================================
+     PREVIOUS TESTIMONIAL
+  ===================================== */
+
+  function previousTestimonial() {
     const prevIndex =
       (currentIndex - 1 + testimonials.length) % testimonials.length;
 
     showTestimonial(prevIndex);
+  }
+
+  /* =====================================
+     AUTOMATIC SLIDER
+  ===================================== */
+
+  function startAutoSlide() {
+    stopAutoSlide();
+
+    autoSlide = setInterval(() => {
+      nextTestimonial();
+    }, slideDuration);
+  }
+
+  function stopAutoSlide() {
+    if (autoSlide) {
+      clearInterval(autoSlide);
+
+      autoSlide = null;
+    }
+  }
+
+  /* =====================================
+     NAVIGATION EVENTS
+  ===================================== */
+
+  next.addEventListener("click", () => {
+    nextTestimonial();
+
+    startAutoSlide();
   });
 
-  // Initialise the first testimonial.
+  prev.addEventListener("click", () => {
+    previousTestimonial();
+
+    startAutoSlide();
+  });
+
+  /* =====================================
+     PAUSE ON HOVER
+  ===================================== */
+
+  glassCard.addEventListener("mouseenter", () => {
+    stopAutoSlide();
+  });
+
+  glassCard.addEventListener("mouseleave", () => {
+    startAutoSlide();
+  });
+
+  /* =====================================
+     PAUSE ON KEYBOARD FOCUS
+  ===================================== */
+
+  testimonialSection.addEventListener("focusin", () => {
+    stopAutoSlide();
+  });
+
+  testimonialSection.addEventListener("focusout", (event) => {
+    if (!testimonialSection.contains(event.relatedTarget)) {
+      startAutoSlide();
+    }
+  });
+
+  /* =====================================
+     INITIALISE SLIDER
+  ===================================== */
+
   updateContent(currentIndex);
-  image.alt = `Portrait of ${testimonials[0].name}`;
+
+  startAutoSlide();
 });
 
 /* =========================================
@@ -1228,3 +1248,104 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+
+/* ============================
+   NEWSLETTER FORM - WEB3FORMS
+============================ */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const newsletterForm = document.getElementById("newsletterForm");
+  const newsletterEmail = document.getElementById("newsletterEmail");
+  const subscribeBtn = document.getElementById("subscribeBtn");
+  const ctaMessage = document.getElementById("ctaMessage");
+
+  if (!newsletterForm) return;
+
+  newsletterForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const email = newsletterEmail.value.trim();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+      ctaMessage.textContent = "Please enter a valid email address.";
+      ctaMessage.className = "cta-message error";
+      newsletterEmail.focus();
+      return;
+    }
+
+    subscribeBtn.disabled = true;
+    subscribeBtn.textContent = "Subscribing...";
+    ctaMessage.textContent = "";
+    ctaMessage.className = "cta-message";
+
+    const controller = new AbortController();
+
+    const timeout = setTimeout(() => {
+      controller.abort();
+    }, 15000);
+
+    try {
+      const formData = new FormData();
+
+      formData.append(
+        "access_key",
+        "4ec2990e-d7fe-4493-bfc0-197c317964f2"
+      );
+
+      formData.append("email", email);
+      formData.append(
+        "subject",
+        "New Newsletter Subscriber - VPromote Media"
+      );
+      formData.append("from_name", "VPromote Media");
+
+      const response = await fetch(
+        "https://api.web3forms.com/submit",
+        {
+          method: "POST",
+          body: formData,
+          signal: controller.signal
+        }
+      );
+
+      const result = await response.json();
+
+      console.log("Web3Forms Response:", result);
+
+      if (!response.ok || result.success !== true) {
+        throw new Error(
+          result.message || "Unable to submit your email."
+        );
+      }
+
+      ctaMessage.textContent =
+        "Thank you! You have successfully subscribed.";
+
+      ctaMessage.className = "cta-message success";
+
+      newsletterForm.reset();
+
+    } catch (error) {
+      console.error("Newsletter Error:", error);
+
+      if (error.name === "AbortError") {
+        ctaMessage.textContent =
+          "Request timed out. Please check your connection and try again.";
+      } else {
+        ctaMessage.textContent =
+          error.message || "Something went wrong. Please try again.";
+      }
+
+      ctaMessage.className = "cta-message error";
+
+    } finally {
+      clearTimeout(timeout);
+
+      subscribeBtn.disabled = false;
+      subscribeBtn.textContent = "Subscribe";
+    }
+  });
+});
+

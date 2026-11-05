@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Thank You | VPromote Media</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #111111;
+      color: #f7f7f2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .thankyou-wrapper {
+      width: 100%;
+      max-width: 650px;
+      text-align: center;
+      padding: 65px 35px;
+      border: 1px solid rgba(188, 224, 60, 0.2);
+      border-radius: 25px;
+      background: linear-gradient(
+        145deg,
+        #112249 0%,
+        #171717 75%
+      );
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
+      animation: fadeUp 0.8s ease both;
+      position: relative;
+      z-index: 1;
+    }
+
+    .success-icon {
+      width: 95px;
+      height: 95px;
+      margin: 0 auto 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(188, 224, 60, 0.12);
+      border: 2px solid #bce03c;
+      box-shadow: 0 0 35px rgba(188, 224, 60, 0.2);
+      animation: pop 0.6s ease 0.3s both;
+    }
+
+    .success-icon svg {
+      width: 46px;
+      height: 46px;
+      fill: none;
+      stroke: #bce03c;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 50;
+      stroke-dashoffset: 50;
+      animation: draw 0.8s ease 0.8s forwards;
+    }
+
+    .eyebrow {
+      color: #bce03c;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      margin-bottom: 18px;
+      display: block;
+    }
+
+    h1 {
+      font-size: clamp(30px, 5vw, 46px);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    h1 span {
+      color: #bce03c;
+    }
+
+    .description {
+      color: #b9bdc9;
+      font-size: 14px;
+      line-height: 1.9;
+      max-width: 480px;
+      margin: 0 auto 30px;
+    }
+
+    .home-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 15px 30px;
+      border-radius: 50px;
+      background: #bce03c;
+      color: #112249;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.7px;
+      transition: 0.3s ease;
+    }
+
+    .home-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(188, 224, 60, 0.2);
+    }
+
+    .redirect-text {
+      color: #9296a3;
+      font-size: 11px;
+      margin-top: 25px;
+    }
+
+    .redirect-text span {
+      color: #bce03c;
+      font-weight: 700;
+    }
+
+    .glow {
+      position: fixed;
+      width: 350px;
+      height: 350px;
+      border-radius: 50%;
+      background: rgba(188, 224, 60, 0.06);
+      filter: blur(90px);
+      pointer-events: none;
+    }
+
+    .glow.one {
+      top: -150px;
+      left: -120px;
+    }
+
+    .glow.two {
+      bottom: -180px;
+      right: -100px;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes draw {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @media(max-width: 500px) {
+      .thankyou-wrapper {
+        padding: 50px 22px;
+      }
+
+      .success-icon {
+        width: 80px;
+        height: 80px;
+      }
+
+      .description {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="glow one"></div>
+  <div class="glow two"></div>
+
+  <main class="thankyou-wrapper">
+
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M5 12.5L10 17L20 7"></path>
+      </svg>
+    </div>
+
+    <span class="eyebrow">MESSAGE SENT SUCCESSFULLY</span>
+
+    <h1>
+      Thank You for <span>Contacting Us!</span>
+    </h1>
+
+    <p class="description">
+      Your message has been successfully submitted.
+      We truly appreciate your interest in VPromote Media.
+      Our team will review your enquiry and get back to
+      you as soon as possible.
+    </p>
+
+    <a href="index.html" class="home-btn">
+      BACK TO HOME <span>↗</span>
+    </a>
+
+    <p class="redirect-text">
+      You will be redirected to the homepage in
+      <span id="countdown">15</span> seconds.
+    </p>
+
+  </main>
+
+  <script>
+    let seconds = 15;
+    const countdown = document.getElementById("countdown");
+
+    const timer = setInterval(() => {
+      seconds--;
+      countdown.textContent = seconds;
+
+      if (seconds <= 0) {
+        clearInterval(timer);
+        window.location.href = "index.html";
+      }
+    }, 2000);
+  </script>
+
+</body>
+</html>

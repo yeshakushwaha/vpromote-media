@@ -1,35 +1,75 @@
+
 <header class="site-header">
   <div class="container navbar">
+
     <!-- Logo -->
     <a href="index.html" class="logo">
-      <img src="assets/img/logo.png" alt="VPromote Media" />
+      <img
+        src="https://res.cloudinary.com/enrqxhaa/image/upload/v1793454932/logo.png"
+        alt="VPromote Media"
+      />
     </a>
 
     <!-- Desktop Navigation -->
-    <nav class="desktop-nav">
+    <nav class="desktop-nav" aria-label="Main Navigation">
       <a href="index.html">Home</a>
       <a href="#">About</a>
       <a href="#">Our Services</a>
       <a href="#">Our Work</a>
       <a href="#">Work With Us</a>
-      <a href="#">Contact</a>
+      <a href="contact.html">Contact</a>
     </nav>
 
     <!-- Mobile Menu Button -->
-    <button class="menu-toggle" id="menuToggle" aria-label="Open Menu">
+    <button
+      class="menu-toggle"
+      id="menuToggle"
+      aria-label="Open Menu"
+      aria-expanded="false"
+      aria-controls="mobileNav"
+      type="button"
+    >
       <span></span>
       <span></span>
       <span></span>
     </button>
+
   </div>
 
   <!-- Mobile Navigation -->
-  <nav class="mobile-nav" id="mobileNav">
-    <a href="index.html">Home</a>
-    <a href="#">About</a>
-    <a href="#">Our Services</a>
-    <a href="#">Our Work</a>
-    <a href="#">Work With Us</a>
-    <a href="#">Contact</a>
+  <nav
+    class="mobile-nav"
+    id="mobileNav"
+    aria-label="Mobile Navigation"
+    aria-hidden="true"
+  >
+
+    <a href="index.html" class="mobile-nav-link">
+      <span class="mobile-nav-text">Home</span>
+    </a>
+
+    <a href="#" class="mobile-nav-link">
+      <span class="mobile-nav-text">About</span>
+    </a>
+
+    <a href="#" class="mobile-nav-link">
+      <span class="mobile-nav-text">Our Services</span>
+    </a>
+
+    <a href="#" class="mobile-nav-link">
+      <span class="mobile-nav-text">Our Work</span>
+    </a>
+
+    <a href="#" class="mobile-nav-link">
+      <span class="mobile-nav-text">Work With Us</span>
+    </a>
+
+    <a href="contact.html" class="mobile-nav-link">
+      <span class="mobile-nav-text">Contact</span>
+    </a>
+
   </nav>
 </header>
+
+<!-- Mobile Menu Background Blur -->
+<div class="menu-backdrop" id="menuBackdrop"></div>
